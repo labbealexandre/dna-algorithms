@@ -1,6 +1,19 @@
 import os
 
 class CustomAssertions:
+
+    def assertEqualVectors(self, u, v):
+        n1, n2 = len(u), len(v)
+        if (n1 != n2):
+            raise AssertionError(
+                'dimensions don\'t match, '
+                + str(n1) + ' : ' + str(n2)
+            )
+        
+        for i in range(n1):
+            if u[i] != v[i]:
+                raise AssertionError('vectors are not equal, indice ' + str(i) + ', u : ' + str(u[i]) + ' and v : ' + str(v[i]))
+
     def assertEqualMatrix(self, A, B):
         nA1, nA2 = len(A), len(A[0])
         nB1, nB2 = len(B), len(B[0])

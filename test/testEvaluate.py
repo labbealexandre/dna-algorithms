@@ -4,16 +4,6 @@ import importlib
 from src import evaluate as ev
 from test import customAssertions as ca
 
-def compareMatrices(A, B, _self):
-    nA1, nA2 = len(A), len(A[0])
-    nB1, nB2 = len(B), len(B[0])
-    _self.assertEqual(nA1, nB1)
-    _self.assertEqual(nA2, nB2)
-
-    for i in range(nA1):
-        for j in range(nA2):
-            _self.assertEqual(A[i][j], B[i][j])
-
 class TestEvaluate(unittest.TestCase, ca.CustomAssertions):
 
     """Test case for evaluate functions"""

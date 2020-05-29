@@ -93,7 +93,7 @@ class TestTreeToBND(unittest.TestCase, ca.CustomAssertions):
         # dr.printRes(M, res, expected)
         self.assertEqualMatrix(expected, res)
 
-class TestSparseToBND(unittest.TestCase):
+class TestSparseToBND(unittest.TestCase, ca.CustomAssertions):
 
     """Test case for sparseToBND method"""
 
@@ -109,7 +109,20 @@ class TestSparseToBND(unittest.TestCase):
             [0, 0, 0, 0, 0, 0, 0, 0]
         ]
 
+        expected = [
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [1, 0, 0, 0, 0, 1, 0, 0],
+            [0, 1, 0, 0, 0, 0, 0, 0],
+            [0, 0, 1, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 1, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 1, 0, 0, 0, 0, 0, 1],
+            [0, 0, 0, 0, 0, 0, 0, 0]
+        ]
+
         res = al.sparseToBND(M)
+        dr.printRes(M, res, expected)
+        self.assertEqualMatrix(expected, res)
 
 if __name__ == '__main__':
     unittest.main()

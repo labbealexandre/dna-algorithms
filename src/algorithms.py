@@ -69,7 +69,7 @@ def treeToBND(M):
         for j in range(n):
             reverseM[j][i] = M[i][j]
 
-    # N will be he result the result unweighted graph
+    # N will be the result the result unweighted graph
     N = [[0 for i in range(n)] for j in range(n)]
             
     # We arbitrary set the root as 0
@@ -82,4 +82,59 @@ def treeToBND(M):
     buildTrees(M, reverseM, root, -1, visited, N, False)
 
     return N
-        
+
+def sparseToBND(M):
+
+    """
+    Theorem 4 : get a Bounded Network Design from
+    a request distribution such as the graph is sparse
+    """
+
+    n = len(M)
+
+    # N will be the result the result unweighted graph
+    N = [[0 for i in range(n)] for j in range(n)]
+
+    auxM = [[0 for i in range(n)] for j in range(n)]
+    reverseAuxM = [[0 for i in range(n)] for j in range(n)]
+
+    for i in range(n):
+        for j in range(n):
+            if M[i][j] > 0:
+                auxM[i][j] = 1
+                reverseAuxM[j][i] = 1
+
+    egdesN = 0
+    for i in range(n):
+        egdesN += sum(auxM[i])
+    avgDegrees = 2.*egdesN/n
+
+    # Compute the degrees and sort them
+    degrees = [(i, sum(auxM[i]) + sum(reverseAuxM[i])) for i in range(n)]
+    degrees.sort(key= lambda t: t[1])
+
+    # Fill the lowDegress and highDegrees lists
+    lowDegrees, highDegrees = [], []
+    m = n//2
+    i = 0
+    while i < m:
+        lowDegrees.append(degrees[i][0])
+        i+=1
+    while i < n:
+        highDegrees.append(degrees[i][0])
+        i+=1
+
+    lowDegrees.sort()
+    highDegrees.sort()
+
+    # Fill the highOutDegrees and highInDegrees lists
+    highOutDegrees, highInDegrees = [], []
+    for i in highDegrees:
+        if sum(auxM[i]) >= 2*avgDegrees:
+            highOutDegrees.append(i)
+        if sum(reverseAuxM[i]) >= 2*avgDegrees:
+            highInDegrees.append(i)
+
+    # Search for the low degrees
+
+    return N

@@ -62,7 +62,7 @@ from test import customAssertions as ca
 
 class TestTreeToBND(unittest.TestCase, ca.CustomAssertions):
 
-    """Test case for build tree method"""
+    """Test case for treeToBND method"""
 
     def test_simple(self):
         M = [
@@ -90,11 +90,26 @@ class TestTreeToBND(unittest.TestCase, ca.CustomAssertions):
         ]
         
         res = al.treeToBND(M)
-        dr.printRes(M, res, expected)
+        # dr.printRes(M, res, expected)
         self.assertEqualMatrix(expected, res)
 
-    
-        
+class TestSparseToBND(unittest.TestCase):
+
+    """Test case for sparseToBND method"""
+
+    def test_simple(self):
+        M = [
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [0.1, 0, 0, 0, 0, 0, 0, 0],
+            [0.15, 0, 0, 0, 0, 0, 0, 0],
+            [0.05, 0, 0, 0, 0, 0, 0, 0],
+            [0.1, 0, 0, 0, 0, 0.05, 0.35, 0.2],
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0]
+        ]
+
+        res = al.sparseToBND(M)
 
 if __name__ == '__main__':
     unittest.main()

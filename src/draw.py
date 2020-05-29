@@ -1,5 +1,6 @@
 import networkx as nx
 import matplotlib.pyplot as plt
+import math
 
 def matrixToGraph(N, weighted):
 
@@ -24,9 +25,9 @@ def printRes(M, res, expected):
     resG = matrixToGraph(res, False)
     expectedG = matrixToGraph(expected, False)
 
-    fig = plt.figure()
+    fig1 = plt.figure()
 
-    MFig = fig.add_subplot(131,aspect='equal')
+    MFig = fig1.add_subplot(111, aspect='equal')
     MFig.title.set_text("input distribution")
     pos = nx.spring_layout(MG)
     nx.draw_networkx_nodes(MG, pos)
@@ -34,12 +35,15 @@ def printRes(M, res, expected):
     nx.draw_networkx_labels(MG, pos)
     labels = nx.get_edge_attributes(MG, 'weight')
     nx.draw_networkx_edge_labels(MG, pos, edge_labels=labels)
+    plt.plot()
 
-    resFig = fig.add_subplot(132,aspect='equal')
+    fig2 = plt.figure()
+
+    resFig = fig2.add_subplot(121,aspect='equal')
     resFig.title.set_text("result")
     nx.draw_circular(resG, with_labels=True)
 
-    expectedFig = fig.add_subplot(133,aspect='equal')
+    expectedFig = fig2.add_subplot(122,aspect='equal')
     expectedFig.title.set_text("expected")
     nx.draw_circular(expectedG, with_labels=True)
 

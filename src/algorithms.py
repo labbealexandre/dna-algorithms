@@ -14,6 +14,7 @@ def buildTrees(M, reverseM, root, parent, visited, N, outgoing):
         total = sum(children)
         m = len(children)
         if total != 0:
+            # Mehlhorn method to find nearly optimal binary search trees
             # We search for a node which divides the tree
             # in two approximately equal sub-trees
             s, i = children[0], 0

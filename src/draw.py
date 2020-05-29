@@ -13,7 +13,7 @@ def matrixToGraph(N, weighted):
         for j in range(n):
             if N[i][j] > 0:
                 if (weighted):
-                    G.add_weighted_edges_from([(i, j, N[i][j])])
+                    G.add_edge(i, j, weight=N[i][j])
                 else:
                     G.add_edge(i, j)
     
@@ -28,7 +28,12 @@ def printRes(M, res, expected):
 
     MFig = fig.add_subplot(131,aspect='equal')
     MFig.title.set_text("input distribution")
-    nx.draw_circular(MG, with_labels=True)
+    pos = nx.spring_layout(MG)
+    nx.draw_networkx_nodes(MG, pos)
+    nx.draw_networkx_edges(MG, pos)
+    nx.draw_networkx_labels(MG, pos)
+    labels = nx.get_edge_attributes(MG, 'weight')
+    nx.draw_networkx_edge_labels(MG, pos, edge_labels=labels)
 
     resFig = fig.add_subplot(132,aspect='equal')
     resFig.title.set_text("result")

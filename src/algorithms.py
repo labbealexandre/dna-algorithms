@@ -1,4 +1,5 @@
 from src import utils as ut
+import numpy as np
 
 def buildTrees(M, reverseM, root, parent, visited, N, outgoing):
 
@@ -8,19 +9,19 @@ def buildTrees(M, reverseM, root, parent, visited, N, outgoing):
     visited[root] = 1
     n = len(M)
 
-    children = []
+    children = np.zeros(n)
     if outgoing:
         for i in range(n):
             if i != parent:
-                children.append(M[root][i])
+                children[i] = M[root][i]
             else:
-                children.append(0)
+                children[i] = 0
     else:
         for i in range(n):
             if i != parent:
-                children.append(M[i][root])
+                children[i] = M[i][root]
             else:
-                children.append(0)
+                children[i] = 0
 
     ut.buildTree(children, root, N, 0, outgoing)
 
@@ -39,17 +40,19 @@ def treeToBND(M):
     """
 
     n = len(M)
-    reverseM = ut.reverseMatrix(M)
+    reverseM = np.transpose(M)
 
     # N will be the result the result unweighted graph
-    N = [[0 for i in range(n)] for j in range(n)]
+    # N = [[0 for i in range(n)] for j in range(n)]
+    N = np.zeros((n, n))
             
     # We arbitrary set the root as 0
-    visited = [0 for i in range(n)]
+    # visited = [0 for i in range(n)]
+    visited = np.zeros(n)
     root = 0
     buildTrees(M, reverseM, root, -1, visited, N, True)
 
-    visited = [0 for i in range(n)]
+    visited = np.zeros(n)
     root = 0
     buildTrees(M, reverseM, root, -1, visited, N, False)
 

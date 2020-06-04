@@ -4,7 +4,6 @@ import numpy as np
 import networkx as nx
 
 from src import evaluate as ev
-from test import customAssertions as ca
 
 class TestEvaluate(unittest.TestCase):
 

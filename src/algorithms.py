@@ -3,7 +3,7 @@ from src import melhorn as ml
 import numpy as np
 import networkx as nx
 
-def buildTrees(M, reverseM, root, parent, visited, N, outgoing):
+def buildTrees(M, reverseM, root, parent, visited, N, direction):
 
     if visited[root] == 1:
         return
@@ -12,27 +12,27 @@ def buildTrees(M, reverseM, root, parent, visited, N, outgoing):
     n = len(M)
 
     children = np.zeros(n)
-    if outgoing:
+    if direction == "outgoing":
         for i in range(n):
             if i != parent:
                 children[i] = M[root, i]
             else:
                 children[i] = 0
-    else:
+    elif direction == "incoming":
         for i in range(n):
             if i != parent:
                 children[i] = M[i, root]
             else:
                 children[i] = 0
 
-    ml.melhornTree(children, root, N, 0, outgoing)
+    ml.melhornTree(children, root, N, 0, direction)
 
     for i in range(n):
         if (i != parent):
             if M[root, i] > 0:
-                buildTrees(M, reverseM, i, root, visited, N, outgoing)
+                buildTrees(M, reverseM, i, root, visited, N, direction)
             if M[i, root] > 0:
-                buildTrees(M, reverseM, i, root, visited, N, outgoing)
+                buildTrees(M, reverseM, i, root, visited, N, direction)
 
 
 def treeToBND(M):
@@ -50,11 +50,11 @@ def treeToBND(M):
     # We arbitrary set the root as 0
     visited = np.zeros(n)
     root = 0
-    buildTrees(M, reverseM, root, -1, visited, N, True)
+    buildTrees(M, reverseM, root, -1, visited, N, "outgoing")
 
     visited = np.zeros(n)
     root = 0
-    buildTrees(M, reverseM, root, -1, visited, N, False)
+    buildTrees(M, reverseM, root, -1, visited, N, "incoming")
 
     return N
 
@@ -127,9 +127,9 @@ def sparseToBND(M):
         _M[volunteer, low] += M[high, low]
 
     for i in highOutDegrees:
-        ml.melhornTree(_M[i[0],:], i[0], N, 0, True)
+        ml.melhornTree(_M[i[0],:], i[0], N, 0, "outgoing")
 
     for i in highInDegrees:
-        ml.melhornTree(_M[:,i[0]], i[0], N, 0, False)
+        ml.melhornTree(_M[:,i[0]], i[0], N, 0, "incoming")
 
     return N

@@ -20,8 +20,8 @@ class TestMelhornTree(unittest.TestCase):
             [0, 0, 0, 0]
         ])
 
-        # ml.melhornTree(children, 0, N, 0, True)
-        # np.testing.assert_array_equal(expected, N)
+        ml.melhornTree(children, 0, N, 0, direction="outgoing")
+        np.testing.assert_array_equal(expected, N)
         
     def test_simple2(self):
         N = np.zeros((4, 4))
@@ -34,8 +34,8 @@ class TestMelhornTree(unittest.TestCase):
             [0, 0, 0, 0]
         ])
 
-        # ml.melhornTree(children, 2, N, 0, True)
-        # np.testing.assert_array_equal(expected, N)
+        ml.melhornTree(children, 2, N, 0, direction="outgoing")
+        np.testing.assert_array_equal(expected, N)
 
     def test_simple3(self):
         N = np.zeros((4, 4))
@@ -48,7 +48,7 @@ class TestMelhornTree(unittest.TestCase):
             [0, 0, 0, 0]
         ])
 
-        ml.melhornTree(children, 2, N, 0, True)
+        ml.melhornTree(children, 2, N, 0, direction="outgoing")
         np.testing.assert_array_equal(expected, N)
 
     
@@ -57,14 +57,14 @@ class TestMelhornTree(unittest.TestCase):
         minLength = 0
         maxLength = 1000
         maxWeight = 100
-        for i in range(tries):
+        for _ in range(tries):
             n = rd.randint(minLength, maxLength)
             N = np.zeros((n, n))
             children = np.random.random_integers(1, maxWeight, size=n)
             total = np.sum(children)
             children = np.true_divide(children, total)
 
-            root = rd.randint(0, n)
+            root = rd.randint(0, n-1)
             children[root] = 0
 
             ml.melhornTree(children, root, N, 0, True)

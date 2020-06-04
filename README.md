@@ -5,6 +5,7 @@
 You need python3 and the following packages:
 - unittest
 - networkx
+- matloplib
 
 ### Use
 

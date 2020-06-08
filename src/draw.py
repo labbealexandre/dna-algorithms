@@ -2,6 +2,8 @@ import networkx as nx
 import matplotlib.pyplot as plt
 import math
 
+from src import evaluate as ev
+
 def matrixToGraph(N, weighted):
 
     G = nx.DiGraph()
@@ -21,9 +23,12 @@ def matrixToGraph(N, weighted):
     return G
 
 def printRes(M, res, expected):
-    MG = matrixToGraph(M, True)
-    resG = matrixToGraph(res, False)
-    expectedG = matrixToGraph(expected, False)
+    MG = nx.from_numpy_matrix(M)
+    resG = nx.from_numpy_matrix(res)
+    expectedG = nx.from_numpy_matrix(expected)
+
+    resEPL = ev.getEPL(M, resG)
+    expectedEPL = ev.getEPL(M, expectedG)
 
     fig1 = plt.figure()
 
@@ -40,11 +45,11 @@ def printRes(M, res, expected):
     fig2 = plt.figure()
 
     resFig = fig2.add_subplot(121,aspect='equal')
-    resFig.title.set_text("result")
+    resFig.title.set_text("result (EPL = " + str(resEPL) + ")")
     nx.draw_circular(resG, with_labels=True)
 
     expectedFig = fig2.add_subplot(122,aspect='equal')
-    expectedFig.title.set_text("expected")
+    expectedFig.title.set_text("expected (EPL = " + str(expectedEPL) + ")")
     nx.draw_circular(expectedG, with_labels=True)
 
     plt.show()

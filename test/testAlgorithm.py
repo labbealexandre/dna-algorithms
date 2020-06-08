@@ -36,7 +36,7 @@ class TestTreeToBND(unittest.TestCase):
         
         res = al.treeToBND(M)
         np.testing.assert_array_equal(expected, res)
-        # dr.printRes(M, res, expected)
+        dr.printRes(M, res, expected)
 
 class TestSparseToBND(unittest.TestCase):
 

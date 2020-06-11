@@ -138,11 +138,11 @@ def sparseToBND(M):
 
     # Binary trees from highOutDegrees and highInDegrees
     for i in highOutDegrees:
-        _M[i[0],:] = np.zeros(n)
+        N[i[0],:] = np.zeros(n)
         ml.melhornTree(_M[i[0],:], i[0], N, 0, "outgoing")
 
     for i in highInDegrees:
-        _M[:,i[0]] = np.zeros(n)
+        N[:,i[0]] = np.zeros(n)
         ml.melhornTree(_M[:,i[0]], i[0], N, 0, "incoming")
 
     return N

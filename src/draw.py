@@ -23,7 +23,7 @@ def matrixToGraph(N, weighted):
     return G
 
 def printInput(M):
-    MG = nx.from_numpy_matrix(M)
+    MG = nx.from_numpy_matrix(M, create_using=nx.DiGraph)
 
     fig = plt.figure()
 
@@ -31,7 +31,7 @@ def printInput(M):
     MFig.title.set_text("input distribution")
     pos = nx.spring_layout(MG)
     nx.draw_networkx_nodes(MG, pos)
-    nx.draw_networkx_edges(MG, pos)
+    nx.draw_networkx_edges(MG, pos, arrowstyle='->', arrowsize=10)
     nx.draw_networkx_labels(MG, pos)
     labels = nx.get_edge_attributes(MG, 'weight')
     nx.draw_networkx_edge_labels(MG, pos, edge_labels=labels)
@@ -40,22 +40,24 @@ def printInput(M):
     plt.show()
 
 def printRes(M, res, expected):
-    
-    resG = nx.from_numpy_matrix(res)
-    expectedG = nx.from_numpy_matrix(expected)
-
-    resEPL = ev.getEPL(M, resG)
-    expectedEPL = ev.getEPL(M, expectedG)
 
     fig = plt.figure()
 
-    resFig = fig.add_subplot(121,aspect='equal')
+    resG = nx.from_numpy_matrix(res, create_using=nx.DiGraph)
+    resEPL = ev.getEPL(M, resG)
+    if expected is None:
+        resFig = fig.add_subplot(111,aspect='equal')
+    else:
+        resFig = fig.add_subplot(121,aspect='equal')
     resFig.title.set_text("result (EPL = " + str(resEPL) + ")")
     nx.draw_circular(resG, with_labels=True)
 
-    expectedFig = fig.add_subplot(122,aspect='equal')
-    expectedFig.title.set_text("expected (EPL = " + str(expectedEPL) + ")")
-    nx.draw_circular(expectedG, with_labels=True)
+    if not expected is None:
+        expectedG = nx.from_numpy_matrix(expected)
+        expectedEPL = ev.getEPL(M, expectedG)
+        expectedFig = fig.add_subplot(122,aspect='equal')
+        expectedFig.title.set_text("expected (EPL = " + str(expectedEPL) + ")")
+        nx.draw_circular(expectedG, with_labels=True)
 
     plt.plot()
     plt.show()

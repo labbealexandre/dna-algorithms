@@ -83,7 +83,6 @@ def sparseToBND(M):
 
     # Fill the lowDegrees and highDegrees lists
     m = n//2
-    print("m", m)
     lowDegrees = degrees[:m]
     highDegrees = degrees[m:]
 

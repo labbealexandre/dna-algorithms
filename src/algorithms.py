@@ -83,6 +83,7 @@ def sparseToBND(M):
 
     # Fill the lowDegrees and highDegrees lists
     m = n//2
+    print("m", m)
     lowDegrees = degrees[:m]
     highDegrees = degrees[m:]
 
@@ -114,7 +115,8 @@ def sparseToBND(M):
     # it will be at most avgDegree
     helpingHist = np.zeros(len(lowDegrees))
 
-    # Compute G' distribution
+    ### Compute G' distribution ###
+
     for edge in edges:
         high, low = edge[0], edge[1]
 
@@ -126,10 +128,22 @@ def sparseToBND(M):
         _M[high, volunteer] += M[high, low]
         _M[volunteer, low] += M[high, low]
 
+    ### Construction of N from G' ###
+
+    # Initialization of N according to _M
+
+    for i in range(n):
+        for j in range(n):
+            if _M[i, j] > 0:
+                N[i, j] = 1
+
+    # Binary trees from highOutDegrees and highInDegrees
     for i in highOutDegrees:
+        _M[i[0],:] = np.zeros(n)
         ml.melhornTree(_M[i[0],:], i[0], N, 0, "outgoing")
 
     for i in highInDegrees:
+        _M[:,i[0]] = np.zeros(n)
         ml.melhornTree(_M[:,i[0]], i[0], N, 0, "incoming")
 
     return N

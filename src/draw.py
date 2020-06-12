@@ -1,4 +1,5 @@
 import networkx as nx
+import numpy as np
 import matplotlib.pyplot as plt
 import math
 
@@ -23,41 +24,66 @@ def matrixToGraph(N, weighted):
     return G
 
 def printInput(M):
+
+    n, _ = M.shape
+
     MG = nx.from_numpy_matrix(M, create_using=nx.DiGraph)
 
-    fig = plt.figure()
-
-    MFig = fig.add_subplot(111, aspect='equal')
-    MFig.title.set_text("input distribution")
+    MFig = plt.subplot(121, aspect='equal')
+    MFig.set_title("Input Distribution")
     pos = nx.spring_layout(MG)
-    nx.draw_networkx_nodes(MG, pos)
+    if (n < 10):
+        nx.draw_networkx_nodes(MG, pos)
+        labels = nx.get_edge_attributes(MG, 'weight')
+        nx.draw_networkx_edge_labels(MG, pos, edge_labels=labels)
+        nx.draw_networkx_labels(MG, pos)
     nx.draw_networkx_edges(MG, pos, arrowstyle='->', arrowsize=10)
-    nx.draw_networkx_labels(MG, pos)
-    labels = nx.get_edge_attributes(MG, 'weight')
-    nx.draw_networkx_edge_labels(MG, pos, edge_labels=labels)
-
     plt.plot()
+
+    n, _ = M.shape
+    nodes = np.array([i for i in range(n)])
+
+    OFig = plt.subplot(222)
+    OFig.set_title("Outgoing nodes distribution")
+    outgoingDistribution = ev.getOutgoingDistribution(M)
+    plt.plot(nodes, outgoingDistribution)
+
+    IFig = plt.subplot(224)
+    IFig.set_title("Incoming nodes distribution")
+    incomingDistribution = ev.getIncomingDistribution(M)
+    plt.plot(nodes, incomingDistribution)
+
     plt.show()
 
 def printRes(M, res, expected):
 
     fig = plt.figure()
+    n, _ = res.shape
 
-    resG = nx.from_numpy_matrix(res, create_using=nx.DiGraph)
+    ### Parameters
+    if (n < 10):
+        withLabel = True
+        nodeSize = 300
+    else:
+        withLabel = False
+        nodeSize = 0
+
+    resG = nx.from_numpy_matrix(res)
     resEPL = ev.getEPL(M, resG)
+    resMax = ev.getMaxDegree(resG)
     if expected is None:
         resFig = fig.add_subplot(111,aspect='equal')
     else:
         resFig = fig.add_subplot(121,aspect='equal')
-    resFig.title.set_text("result (EPL = " + str(resEPL) + ")")
-    nx.draw_circular(resG, with_labels=True)
+    resFig.title.set_text("result (EPL = " + str(resEPL) + ", max degree = " + str(resMax) + ")")
+    nx.draw_circular(resG, with_labels=withLabel, node_size=nodeSize)
 
     if not expected is None:
         expectedG = nx.from_numpy_matrix(expected)
         expectedEPL = ev.getEPL(M, expectedG)
         expectedFig = fig.add_subplot(122,aspect='equal')
         expectedFig.title.set_text("expected (EPL = " + str(expectedEPL) + ")")
-        nx.draw_circular(expectedG, with_labels=True)
+        nx.draw_circular(expectedG, with_labels=withLabel, node_size=nodeSize)
 
     plt.plot()
     plt.show()

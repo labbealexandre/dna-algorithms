@@ -1,7 +1,9 @@
 from src import utils as ut
 from src import melhorn as ml
+from src import chrono as ch
 import numpy as np
 import networkx as nx
+from time import time
 
 def buildTrees(M, reverseM, root, parent, visited, N, direction):
 
@@ -58,26 +60,29 @@ def treeToBND(M):
 
     return N
 
-def sparseToBND(M):
+def sparseToBND(M, time_stats=False):
 
     """
     Theorem 4 : get a Bounded Network Design from
     a request distribution such as the graph is sparse
     """
 
+    t0 = ch.initRecord()
+    tLast = t0
+    records = []
+
     n = len(M)
 
     # N will be the result unweighted graph
     N = np.zeros((n, n))
-    auxM = np.zeros((n, n))
-
-    for i in range(n):
-        for j in range(n):
-            if M[i, j] > 0:
-                auxM[i, j] = 1
+    auxM = np.ceil(M)
 
     auxG = nx.from_numpy_matrix(auxM, create_using=nx.MultiDiGraph())
     avgDegrees = 2.*nx.number_of_edges(auxG)/n
+
+    ### begin time stat ###
+    if time_stats: tLast = tLast = ch.addRecord(records, tLast, "initialization")
+    ### end time stat ###
 
     degrees = sorted(auxG.degree(), key=lambda x: x[1])
 
@@ -97,6 +102,10 @@ def sparseToBND(M):
             highOutDegrees.append(i)
         if np.sum(auxG.in_degree(i[0])) >= 2*avgDegrees:
             highInDegrees.append(i)
+
+    ### begin time stat ###
+    if time_stats: tLast = ch.addRecord(records, tLast, "sorting by degrees")
+    ### end time stat ###
 
     # Create a copy of a M, which will represents the G' distribution
     _M = np.copy(M)
@@ -127,14 +136,12 @@ def sparseToBND(M):
         _M[high, volunteer] += M[high, low]
         _M[volunteer, low] += M[high, low]
 
-    ### Construction of N from G' ###
-
+    ### begin time stat ###
+    if time_stats: tLast = ch.addRecord(records, tLast, "compute G'")
+    ### end time stat ###, headers
     # Initialization of N according to _M
 
-    for i in range(n):
-        for j in range(n):
-            if _M[i, j] > 0:
-                N[i, j] = 1
+    N = np.ceil(_M)
 
     # Binary trees from highOutDegrees and highInDegrees
     for i in highOutDegrees:
@@ -145,4 +152,15 @@ def sparseToBND(M):
         N[:,i[0]] = np.zeros(n)
         ml.melhornTree(_M[:,i[0]], i[0], N, 0, "incoming")
 
+    ### begin time stat ###
+    if time_stats: tLast = ch.addRecord(records, tLast, "compute N")
+    ### end time stat ###
+
+    ### begin time stat ###
+    if time_stats: ch.addRecord(records, t0, "total")
+    ### end time stat ###
+
+    if time_stats:
+        return [n] + records
+        
     return N

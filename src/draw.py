@@ -32,11 +32,12 @@ def printInput(M):
     MFig = plt.subplot(121, aspect='equal')
     MFig.set_title("Input Distribution")
     pos = nx.spring_layout(MG)
-    if (n < 10):
+    if (n < 50):
         nx.draw_networkx_nodes(MG, pos)
+        nx.draw_networkx_labels(MG, pos)
+    if (n < 5):
         labels = nx.get_edge_attributes(MG, 'weight')
         nx.draw_networkx_edge_labels(MG, pos, edge_labels=labels)
-        nx.draw_networkx_labels(MG, pos)
     nx.draw_networkx_edges(MG, pos, arrowstyle='->', arrowsize=10)
     plt.plot()
 
@@ -61,7 +62,7 @@ def printRes(M, res, expected):
     n, _ = res.shape
 
     ### Parameters
-    if (n < 10):
+    if (n < 50):
         withLabel = True
         nodeSize = 300
     else:

@@ -1,6 +1,7 @@
 from src import utils as ut
 from src import melhorn as ml
 from src import chrono as ch
+from src import draw as dr
 import numpy as np
 import networkx as nx
 from time import time
@@ -60,7 +61,7 @@ def treeToBND(M):
 
     return N
 
-def sparseToBND(M, time_stats=False):
+def sparseToBND(M, time_stats=False, debug=False):
 
     """
     Theorem 4 : get a Bounded Network Design from
@@ -109,6 +110,7 @@ def sparseToBND(M, time_stats=False):
 
     # Create a copy of a M, which will represents the G' distribution
     _M = np.copy(M)
+    if debug: dr.printInput(_M)
 
     # Search for edges from highOutDegree to highInDegree
     edges = []
@@ -145,11 +147,13 @@ def sparseToBND(M, time_stats=False):
 
     # Binary trees from highOutDegrees and highInDegrees
     for i in highOutDegrees:
-        N[i[0],:] = np.zeros(n)
+        aux = np.ceil(_M[i[0],:])
+        N[i[0],:] -= aux
         ml.melhornTree(_M[i[0],:], i[0], N, 0, "outgoing")
 
     for i in highInDegrees:
-        N[:,i[0]] = np.zeros(n)
+        aux = np.ceil(_M[:,i[0]])
+        N[:,i[0]] -= aux
         ml.melhornTree(_M[:,i[0]], i[0], N, 0, "incoming")
 
     ### begin time stat ###

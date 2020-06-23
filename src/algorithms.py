@@ -123,7 +123,7 @@ def sparseToBND(M, time_stats=False, debug=False):
     # register for each lowDegree the number of times
     # it serves for an helping node
     # it will be at most avgDegree
-    helpingHist = np.zeros(len(lowDegrees))
+    helpingList = np.zeros(len(lowDegrees))
 
     ### Compute G' distribution ###
 
@@ -132,7 +132,9 @@ def sparseToBND(M, time_stats=False, debug=False):
 
         # the next volunteer to help
         # is the first lowDegree which has least helped
-        volunteer = lowDegrees[np.argmin(helpingHist)]
+        amin = np.argmin(helpingList)
+        volunteer = lowDegrees[amin]
+        helpingList[amin]+=1
 
         _M[high, low] = 0
         _M[high, volunteer] += M[high, low]

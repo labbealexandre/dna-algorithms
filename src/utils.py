@@ -1,4 +1,7 @@
 from math import log
+import numpy as np
+import operator as op
+from functools import reduce
 
 def getWeigtedPathLength(N, weights, root, length):
     n, _ = N.shape
@@ -23,3 +26,25 @@ def round_to_n(x, n):
     format = "%." + str(n-1) + "e"
     as_string = format % x
     return float(as_string)
+
+def intToBinaryArray(n, size):
+    res = np.zeros(size)
+
+    for i in range(size):
+        res[i] = n%2
+        n//=2
+
+    return res
+
+def binaryArrayToInt(arr):
+    res = 0
+    power = 1
+
+    for i in range(len(arr)):
+        res+=power*arr[i]
+        power*=2
+
+    return res
+
+def permutations(n, r):
+    return reduce(op.mul, range(n, n-r, -1), 1)

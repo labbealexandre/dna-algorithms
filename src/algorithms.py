@@ -37,6 +37,11 @@ def buildTrees(M, reverseM, root, parent, visited, N, direction):
             if M[i, root] > 0:
                 buildTrees(M, reverseM, i, root, visited, N, direction)
 
+def chooseHelpingNode(helpingList, lowDegrees):
+    amin = np.argmin(helpingList)
+    helpingList[amin]+=1
+
+    return lowDegrees[amin]
 
 def treeToBND(M):
     """
@@ -130,11 +135,8 @@ def sparseToBND(M, time_stats=False, debug=False):
     for edge in edges:
         high, low = edge[0], edge[1]
 
-        # the next volunteer to help
-        # is the first lowDegree which has least helped
-        amin = np.argmin(helpingList)
-        volunteer = lowDegrees[amin]
-        helpingList[amin]+=1
+        # find the next volunteer
+        volunteer = chooseHelpingNode(helpingList, lowDegrees)
 
         _M[high, low] = 0
         _M[high, volunteer] += M[high, low]

@@ -70,13 +70,17 @@ def printRes(M, res, expected):
         nodeSize = 0
 
     resG = nx.from_numpy_matrix(res)
-    resEPL = ev.getEPL(M, resG)
-    resMax = ev.getMaxDegree(resG)
+
     if expected is None:
         resFig = fig.add_subplot(111,aspect='equal')
     else:
         resFig = fig.add_subplot(121,aspect='equal')
-    resFig.title.set_text("result (EPL = " + str(resEPL) + ", max degree = " + str(resMax) + ")")
+
+    if nx.is_connected(resG):
+        resEPL = ev.getEPL(M, resG)
+        resMax = ev.getMaxDegree(resG)
+        resFig.title.set_text("result (EPL = " + str(resEPL) + ", max degree = " + str(resMax) + ")")
+
     nx.draw_circular(resG, with_labels=withLabel, node_size=nodeSize)
 
     if not expected is None:

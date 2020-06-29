@@ -37,8 +37,62 @@ def buildTrees(M, reverseM, root, parent, visited, N, direction):
             if M[i, root] > 0:
                 buildTrees(M, reverseM, i, root, visited, N, direction)
 
-def chooseHelpingNode(helpingList, lowDegrees):
-    amin = np.argmin(helpingList)
+def chooseHelpingNode(helpingList, lowDegrees, src, dst, M, way=0):
+    if way == 0:
+        amin = np.argmin(helpingList)
+
+    elif way == 1:
+        i = 0
+        amin = -1
+        _min = -1
+        while i < len(lowDegrees):
+            node = lowDegrees[i][0]
+            if M[src, node] > 0 and (amin == -1 or helpingList[i] < _min):
+                _min, amin = helpingList[i], i
+            i+=1
+
+        if amin == -1:
+            # print(str(src) + ' -> ' + str(dst) + ' failed to find in the neighbourhood')
+            amin = np.argmin(helpingList)
+
+    elif way == 2:
+        i = 0
+        amin = np.argmin(helpingList)
+        _min = np.min(helpingList)
+        while i < len(lowDegrees):
+            node = lowDegrees[i][0]
+            if M[src, node] > 0 and helpingList[i] == _min:
+                _min, amin = helpingList[i], i
+                # print('found in the neighbourhood')
+                break
+            i+=1
+
+    elif way == 3:
+        i = 0
+        amin = np.argmin(helpingList)
+        _min = np.min(helpingList)
+        while i < len(lowDegrees):
+            node = lowDegrees[i][0]
+            if M[node, dst] > 0 and helpingList[i] == _min:
+                _min, amin = helpingList[i], i
+                # print('found in the neighbourhood')
+                break
+            i+=1
+
+    elif way == 4:
+        i = 0
+        amin = -1
+        _min = -1
+        while i < len(lowDegrees):
+            node = lowDegrees[i][0]
+            if M[src, node] == 0 and (amin == -1 or helpingList[i] < _min):
+                _min, amin = helpingList[i], i
+            i+=1
+
+        if amin == -1:
+            # print(str(src) + ' -> ' + str(dst) + ' failed to find outside the neighbourhood')
+            amin = np.argmin(helpingList)
+
     helpingList[amin]+=1
 
     return lowDegrees[amin]
@@ -104,10 +158,22 @@ def sparseToBND(M, time_stats=False, debug=False):
     # Fill the highOutDegrees and highInDegrees lists
     highOutDegrees, highInDegrees = [], []
     for i in highDegrees:
-        if np.sum(auxG.out_degree(i[0])) >= 2*avgDegrees:
+        if auxG.out_degree(i[0]) >= 2*avgDegrees:
             highOutDegrees.append(i)
-        if np.sum(auxG.in_degree(i[0])) >= 2*avgDegrees:
+        if auxG.in_degree(i[0]) >= 2*avgDegrees:
             highInDegrees.append(i)
+
+    # highDegrees = np.array(highDegrees)
+    # print(highDegrees)
+    # print('original', highInDegreesOld, highOutDegreesOld)
+    # highOutFilter = auxG.out_degree(highDegrees[:,0]) >= 2*avgDegrees
+    # highInFilter = auxG.in_degree(highDegrees[:,0]) >= 2*avgDegrees
+
+    # print('filter', highInFilter, highOutFilter)
+
+    # highOutDegrees = highDegrees[highOutFilter]
+    # highInDegrees = highDegrees[highInFilter]
+    # print('new', highInDegrees, highOutDegrees)
 
     ### begin time stat ###
     if time_stats: tLast = ch.addRecord(records, tLast, "sorting by degrees")
@@ -121,7 +187,7 @@ def sparseToBND(M, time_stats=False, debug=False):
     edges = []
     for i in highOutDegrees:
         for j in highInDegrees:
-            if auxM[i[0], j[0]] == 1:
+            if auxM[i[0], j[0]] > 0:
                 edges.append((i[0], j[0]))
 
     # Create an helping history
@@ -133,14 +199,14 @@ def sparseToBND(M, time_stats=False, debug=False):
     ### Compute G' distribution ###
 
     for edge in edges:
-        high, low = edge[0], edge[1]
+        src, dst = edge[0], edge[1]
 
         # find the next volunteer
-        volunteer = chooseHelpingNode(helpingList, lowDegrees)
+        volunteer = chooseHelpingNode(helpingList, lowDegrees, src, dst, M, way=2)
 
-        _M[high, low] = 0
-        _M[high, volunteer] += M[high, low]
-        _M[volunteer, low] += M[high, low]
+        _M[src, dst] = 0
+        _M[src, volunteer] += M[src, dst]
+        _M[volunteer, dst] += M[src, dst]
 
     ### begin time stat ###
     if time_stats: tLast = ch.addRecord(records, tLast, "compute G'")
@@ -151,13 +217,18 @@ def sparseToBND(M, time_stats=False, debug=False):
 
     # Binary trees from highOutDegrees and highInDegrees
     for i in highOutDegrees:
+        # We remove from N the out-neigbourhood of i in M
+        # We do not want to remove edges we have already created
         aux = np.ceil(_M[i[0],:])
         N[i[0],:] -= aux
+
         ml.melhornTree(_M[i[0],:], i[0], N, 0, "outgoing")
 
     for i in highInDegrees:
+        # We remove from N the in-neigbourhood of i in M
         aux = np.ceil(_M[:,i[0]])
         N[:,i[0]] -= aux
+
         ml.melhornTree(_M[:,i[0]], i[0], N, 0, "incoming")
 
     ### begin time stat ###

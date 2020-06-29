@@ -98,18 +98,8 @@ elif choice == 1:
     centers = []
 
     highSubsets = np.array([0, 0, 1, 0, 1])
+    # highSubsets = np.array([1, 0, 0, 1, 0])
     G = severalStarGraphs(m, k, highSubsets)
-
-    # for i in range(k):
-    #     center = i*(m+1)    
-    #     centers.append(center)
-    #     nodes = np.array([j+center for j in range(m+1)])
-
-    #     graphs.append(simpleStar(nodes, center, direction="incoming"))
-    
-    # graphs.append(simpleCycleGraph(centers))
-
-    # G = nx.compose_all(graphs)
 
     M = nx.to_numpy_matrix(G)
     M /= M.sum()

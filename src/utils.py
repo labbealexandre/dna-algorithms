@@ -11,7 +11,7 @@ def getWeigtedPathLength(N, weights, root, length):
             res+=getWeigtedPathLength(N, weights, i, length+1)
     return res
 
-def getEntropia(weights):
+def getEntropy(weights):
     H = 0
     n = weights.size
     for i in range(n):
@@ -48,3 +48,12 @@ def binaryArrayToInt(arr):
 
 def permutations(n, r):
     return reduce(op.mul, range(n, n-r, -1), 1)
+
+def arrayToDictArray(arr):
+    n = len(arr)
+    indexes = np.arange(n)
+    res = np.zeros((n, 2))
+    res[:,0], res[:,1] = indexes, arr
+
+    # Then we sort the result by the second column
+    return res[res[:,1].argsort()]

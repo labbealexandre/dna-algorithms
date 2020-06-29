@@ -10,10 +10,10 @@ def getEPL(M, G):
     """ Calculation of the expected path length """
     n, _ = M.shape
     res = 0
-    D = getDistances(G)
+    D = dict(nx.all_pairs_shortest_path_length(G))
     for i in range(n):
         for j in range(n):
-            res += M[i, j] * D[i, j]
+            res += M[i, j] * D[i][j]
     return res
 
 def getDistances(G):

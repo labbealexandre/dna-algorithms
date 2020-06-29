@@ -2,6 +2,7 @@ import networkx as nx
 import numpy as np
 import matplotlib.pyplot as plt
 import math
+import random as rd
 
 from src import evaluate as ev
 
@@ -56,7 +57,7 @@ def printInput(M):
 
     plt.show()
 
-def printRes(M, res, expected):
+def printRes(M, res, expected, layers=[]):
 
     fig = plt.figure()
     n, _ = res.shape
@@ -81,7 +82,15 @@ def printRes(M, res, expected):
         resMax = ev.getMaxDegree(resG)
         resFig.title.set_text("result (EPL = " + str(resEPL) + ", max degree = " + str(resMax) + ")")
 
-    nx.draw_circular(resG, with_labels=withLabel, node_size=nodeSize)
+    # nx.draw_circular(resG, with_labels=withLabel, node_size=nodeSize)
+    pos = nx.circular_layout(resG)
+    nx.draw_networkx_nodes(resG, pos)
+    nx.draw_networkx_labels(resG, pos)
+    nx.draw_networkx_edges(resG, pos, edge_color='k')
+    for layer in layers:
+        subG = nx.from_numpy_matrix(layer)
+        elist = nx.to_edgelist(subG)
+        nx.draw_networkx_edges(resG, pos, edgelist=elist, edge_color=(rd.random(), rd.random(), rd.random()), width=5*rd.random())
 
     if not expected is None:
         expectedG = nx.from_numpy_matrix(expected)

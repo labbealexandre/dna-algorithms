@@ -163,7 +163,7 @@ def addHelpingNodes(_M, lowDegrees, M, edges):
         src, dst = edge[0], edge[1]
 
         # find the next volunteer
-        volunteer = chooseHelpingNode(helpingList, lowDegrees, src, dst, M, way=0)
+        volunteer = chooseHelpingNode(helpingList, lowDegrees, src, dst, M, way=1)
         volunteers.append(volunteer)
 
         _M[src, dst] = 0

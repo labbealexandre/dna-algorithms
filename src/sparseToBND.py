@@ -127,15 +127,39 @@ def getSortedNodes(degrees, n, auxG):
 
     highDegrees = np.array(highDegrees)
 
-    outDegrees = np.array(auxG.out_degree(highDegrees[:,0]))
-    aux = outDegrees[:,1]
-    mask = aux >= 2*avgDegrees
-    highOutDegrees = outDegrees[mask]
+    tmp = auxG.out_degree(highDegrees[:,0])
+    print(tmp)
+    if len(tmp) == 0:
+        outDegrees = np.array([])
+    elif len(tmp) == 1:
+        tmp = list(tmp)
+        outDegrees = np.array([[tmp[0][0], tmp[0][1]]])
+    else:
+        outDegrees = np.array(auxG.out_degree(highDegrees[:,0]))
 
-    inDegrees = np.array(auxG.in_degree(highDegrees[:,0]))
-    aux = inDegrees[:,1]
-    mask = aux >= 2*avgDegrees
-    highInDegrees = inDegrees[mask]
+    if len(outDegrees > 0):
+        aux = outDegrees[:,1]
+        mask = aux >= 2*avgDegrees
+        highOutDegrees = outDegrees[mask]
+    else:
+        highOutDegrees = np.array([])
+
+    tmp = auxG.in_degree(highDegrees[:,0])
+    print(tmp)
+    if len(tmp) == 0:
+        inDegrees = np.array([])
+    elif len(tmp) == 1:
+        tmp = list(tmp)
+        inDegrees = np.array([[tmp[0][0], tmp[0][1]]])
+    else:
+        inDegrees = np.array(auxG.in_degree(highDegrees[:,0]))
+
+    if len(inDegrees > 0):
+        aux = inDegrees[:,1]
+        mask = aux >= 2*avgDegrees
+        highInDegrees = inDegrees[mask]
+    else:
+        highInDegrees = np.array([])
 
     return [lowDegrees, highOutDegrees, highInDegrees]
 

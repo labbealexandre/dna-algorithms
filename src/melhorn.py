@@ -1,6 +1,7 @@
 import numpy as np
+from src import utils as ut
 
-def melhornTree(children, root, N, direction="outgoing", layer=None):
+def melhornTree(children, root, N, direction=ut.Direction.OUTGOING, layer=None):
     """
     build optimal tree from the children of a node
     """
@@ -19,10 +20,10 @@ def melhornTree(children, root, N, direction="outgoing", layer=None):
 
     index = int(children[i, 0])
 
-    if direction == "outgoing":
+    if direction == ut.Direction.OUTGOING:
         N[root, index] = 1
         if layer is not None: layer[root, index] = 1
-    elif direction == "incoming":
+    elif direction == ut.Direction.INCOMING:
         N[index, root] = 1
         if layer is not None: layer[root, index] = 1
 

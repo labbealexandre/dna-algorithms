@@ -15,13 +15,13 @@ def buildTrees(M, reverseM, root, parent, visited, N, direction):
     n = len(M)
 
     children = np.zeros(n)
-    if direction == "outgoing":
+    if direction == ut.Direction.OUTGOING:
         for i in range(n):
             if i != parent:
                 children[i] = M[root, i]
             else:
                 children[i] = 0
-    elif direction == "incoming":
+    elif direction == ut.Direction.INCOMING:
         for i in range(n):
             if i != parent:
                 children[i] = M[i, root]
@@ -55,10 +55,10 @@ def treeToBND(M):
     # We arbitrary set the root as 0
     visited = np.zeros(n)
     root = 0
-    buildTrees(M, reverseM, root, -1, visited, N, "outgoing")
+    buildTrees(M, reverseM, root, -1, visited, N, ut.Direction.OUTGOING)
 
     visited = np.zeros(n)
     root = 0
-    buildTrees(M, reverseM, root, -1, visited, N, "incoming")
+    buildTrees(M, reverseM, root, -1, visited, N, ut.Direction.INCOMING)
 
     return N

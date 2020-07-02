@@ -2,9 +2,19 @@ import networkx as nx
 import numpy as np
 from ast import literal_eval
 
+def getAverageDegree(M):
+    n, _ = M.shape
+    auxM = np.ceil(M)
+    m = auxM.sum()
+    return 2*m/n
+
 def getMaxDegree(G):
     degrees = sorted([d for n, d in G.degree()], reverse=True)
     return max(degrees)
+
+def getDegrees(G):
+    degrees = sorted(G.degree(), key=lambda x:x[1], reverse=True)
+    return degrees
 
 def getEPL(M, G):
     """ Calculation of the expected path length """

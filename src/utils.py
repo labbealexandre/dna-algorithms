@@ -2,6 +2,11 @@ from math import log
 import numpy as np
 import operator as op
 from functools import reduce
+from enum import Enum
+
+class Direction(Enum):
+    INCOMING = 0
+    OUTGOING = 1
 
 def getWeigtedPathLength(N, weights, root, length):
     n, _ = N.shape

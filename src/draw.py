@@ -28,10 +28,11 @@ def printInput(M):
 
     n, _ = M.shape
 
+    avgDegree = ev.getAverageDegree(M)
     MG = nx.from_numpy_matrix(M, create_using=nx.DiGraph)
 
     MFig = plt.subplot(121, aspect='equal')
-    MFig.set_title("Input Distribution")
+    MFig.set_title("Input Distribution (average degree = " + str(avgDegree) + ")")
     pos = nx.spring_layout(MG)
     if (n < 50):
         nx.draw_networkx_nodes(MG, pos)
@@ -92,12 +93,16 @@ def printRes(M, res, expected, layers=[]):
         elist = nx.to_edgelist(subG)
         nx.draw_networkx_edges(resG, pos, edgelist=elist, edge_color=(rd.random(), rd.random(), rd.random()), width=5*rd.random())
 
-    if not expected is None:
+    if expected is None:
+        resDegrees = ev.getDegrees(resG)
+        print(resDegrees)
+    else:
         expectedG = nx.from_numpy_matrix(expected)
         expectedEPL = ev.getEPL(M, expectedG)
         expectedFig = fig.add_subplot(122,aspect='equal')
         expectedFig.title.set_text("expected (EPL = " + str(expectedEPL) + ")")
         nx.draw_circular(expectedG, with_labels=withLabel, node_size=nodeSize)
+    
 
     plt.plot()
     plt.show()

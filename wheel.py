@@ -5,13 +5,13 @@ import matplotlib.pyplot as plt
 import random as rd
 import copy
 
-from src import algorithms as al
+from src import sparseToBND as sp
 from src import draw as dr
 from src import evaluate as ev
 from src import export as ex
 from src import utils as ut
 
-def simpleWheel(subset, center, direction="outgoing"):
+def simpleWheel(subset, center, direction=ut.Direction.OUTGOING):
     """ create a wheel graph on the input nodes subset
     with node i as the center
     """
@@ -28,10 +28,11 @@ def simpleWheel(subset, center, direction="outgoing"):
 
     G = nx.wheel_graph(n)
     G = nx.to_directed(G)
+    G = nx.DiGraph(G)
 
-    if direction == "outgoing":
+    if direction == ut.Direction.OUTGOING:
         G.remove_edges_from([(i, 0) for i in range(n)])
-    elif direction == "incoming":
+    elif direction == ut.Direction.INCOMING:
         G.remove_edges_from([(0, i) for i in range(n)])
     else:
         raise NameError(str(direction) + ' is not a valid value for direction')
@@ -45,15 +46,15 @@ def severalWheels(subset, highOutSubsets, highInSubsets):
     graphs = []
 
     for highOutNode in highOutSubsets:
-        graphs.append(simpleWheel(subset, highOutNode, direction="outgoing"))
+        graphs.append(simpleWheel(subset, highOutNode, direction=ut.Direction.OUTGOING))
 
     for highInNode in highInSubsets:
-        graphs.append(simpleWheel(subset, highInNode, direction="incoming"))
+        graphs.append(simpleWheel(subset, highInNode, direction=ut.Direction.INCOMING))
 
     G = nx.compose_all(graphs)
     return G
 
-choice = 4
+choice = 1
 
 ### Simple Test for one wheel ###
 if choice == 0:
@@ -61,14 +62,14 @@ if choice == 0:
     center = 0
     nodes = np.array([i for i in range(n)])
 
-    G = simpleWheel(nodes, center, direction="outgoing")
+    G = simpleWheel(nodes, center, direction=ut.Direction.OUTGOING)
     M = nx.to_numpy_matrix(G)
     M /= M.sum()
 
     dr.printInput(M)
-    res = al.sparseToBND(M)
+    res = sp.sparseToBND(M)
 
-    dr.printRes(M, res, None)
+    dr.printRes(M, res[0], None, res[1])
 
 ### Simple Test for several wheels ###
 elif choice == 1:
@@ -82,9 +83,10 @@ elif choice == 1:
     M /= M.sum()
 
     dr.printInput(M)
-    res = al.sparseToBND(M)
+    res = sp.sparseToBND(M)
+    N, layers = res[0], res[1]
 
-    dr.printRes(M, res, None)
+    dr.printRes(M, N, None, layers)
 
 ### All tests for one wheel ###
 elif choice == 2:
@@ -96,12 +98,13 @@ elif choice == 2:
         center = 0
         nodes = np.array([i for i in range(m)])
 
-        G = simpleWheel(nodes, center, direction="outgoing")
+        G = simpleWheel(nodes, center, direction=ut.Direction.OUTGOING)
         M = nx.to_numpy_matrix(G)
         M /= M.sum()
 
-        res = al.sparseToBND(M)
-        G = nx.from_numpy_matrix(res)
+        res = sp.sparseToBND(M)
+        N, layers = res[0], res[1]
+        G = nx.from_numpy_matrix(N)
         EPL = ev.getEPL(M, G)
         _max = ev.getMaxDegree(G)
         EPLs[m] = EPL
@@ -149,8 +152,9 @@ elif choice == 3:
                 M = nx.to_numpy_matrix(G)
                 M /= M.sum()
 
-                res = al.sparseToBND(M)
-                G = nx.from_numpy_matrix(res)
+                res = sp.sparseToBND(M)
+                N, layers = res[0], res[1]
+                G = nx.from_numpy_matrix(N)
                 EPL = ev.getEPL(M, G)
                 _max = ev.getMaxDegree(G)
                 results.append([i, j, EPL, _max])
@@ -184,8 +188,9 @@ elif choice == 4:
         M = nx.to_numpy_matrix(G)
         M /= M.sum()
 
-        res = al.sparseToBND(M)
-        G = nx.from_numpy_matrix(res)
+        res = sp.sparseToBND(M)
+        N, layers = res[0], res[1]
+        G = nx.from_numpy_matrix(N)
         EPL = ev.getEPL(M, G)
         _max = ev.getMaxDegree(G)
         results.append([i, j, EPL, _max])

@@ -81,6 +81,7 @@ class TestSparseToBND(unittest.TestCase):
             [0, 1, 0, 0, 0, 0, 1, 0],
         ])
 
+        dr.printInput(M)
         res = sp.sparseToBND(M)
         N, layers = res[0], res[1]
         dr.printRes(M, N, expected, layers)

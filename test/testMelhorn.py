@@ -22,7 +22,7 @@ class TestMelhornTree(unittest.TestCase):
             [0, 0, 0, 0],
         ])
 
-        ml.melhornTree(children, 0, N, direction="outgoing")
+        ml.melhornTree(children, 0, N, direction=ut.Direction.OUTGOING)
         np.testing.assert_array_equal(expected, N)
         
     def test_simple2(self):
@@ -38,7 +38,7 @@ class TestMelhornTree(unittest.TestCase):
             [0, 0, 0, 0]
         ])
 
-        ml.melhornTree(children, 2, N, direction="outgoing")
+        ml.melhornTree(children, 2, N, direction=ut.Direction.OUTGOING)
         np.testing.assert_array_equal(expected, N)
 
     def test_simple3(self):
@@ -54,7 +54,7 @@ class TestMelhornTree(unittest.TestCase):
             [0, 0, 0, 0]
         ])
 
-        ml.melhornTree(children, 2, N, direction="outgoing")
+        ml.melhornTree(children, 2, N, direction=ut.Direction.OUTGOING)
         np.testing.assert_array_equal(expected, N)
 
     
@@ -75,7 +75,7 @@ class TestMelhornTree(unittest.TestCase):
 
             childrenDict = ut.arrayToDictArray(children)
 
-            ml.melhornTree(childrenDict, root, N, direction="outgoing")
+            ml.melhornTree(childrenDict, root, N, direction=ut.Direction.OUTGOING)
             length = ut.getWeigtedPathLength(N, children, root, 0)
 
             H = ut.getEntropy(children)

@@ -10,6 +10,8 @@ class TestTreeToBND(unittest.TestCase):
 
     """Test case for treeToBND method"""
 
+    print(" DEBUT TREE")
+
     def test_simple(self):
         M = np.array([
             [0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -23,36 +25,24 @@ class TestTreeToBND(unittest.TestCase):
             [0, 0, 0, 0, 0, 0, 0, 0, 0]
         ])
 
-        # expected = np.array([
-        #     [0, 0, 0, 0, 0, 0, 0, 0, 0],
-        #     [1, 0, 0, 0, 0, 0, 0, 0, 0],
-        #     [0, 0, 0, 1, 0, 0, 0, 0, 0],
-        #     [0, 1, 0, 0, 0, 0, 0, 0, 0],
-        #     [0, 0, 0, 1, 0, 0, 0, 0, 0],
-        #     [0, 0, 0, 0, 1, 0, 0, 1, 0],
-        #     [0, 0, 0, 0, 0, 0, 0, 0, 0],
-        #     [0, 0, 0, 0, 0, 0, 1, 0, 1],
-        #     [0, 0, 0, 0, 0, 0, 0, 0, 0],
-        # ])
-
-        # expected = np.array([
-        #     [0, 0, 0, 0, 0, 0, 0, 0, 0],
-        #     [0, 0, 0, 0, 0, 0, 0, 0, 0],
-        #     [0, 0, 0, 0, 1, 0, 0, 0, 0],
-        #     [0, 0, 1, 0, 0, 0, 0, 0, 0],
-        #     [1, 0, 0, 0, 0, 0, 0, 0, 0],
-        #     [0, 0, 0, 0, 0, 0, 0, 0, 1],
-        #     [0, 0, 0, 0, 0, 0, 0, 0, 0],
-        #     [0, 0, 0, 0, 0, 0, 1, 0, 0],
-        #     [0, 0, 0, 0, 0, 0, 0, 1, 0],
-        # ])
+        expected = np.array([
+            [0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 1, 0, 0, 0, 0],
+            [0, 0, 0, 0, 1, 0, 0, 0, 0],
+            [0, 0, 1, 0, 0, 0, 0, 0, 0],
+            [1, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 1, 0, 0, 1, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 1, 0, 1],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0],
+        ])
         
-        # res = tr.treeToBND(M)
-        # print('res', res)
-        # print('exp', expected)
-        # np.testing.assert_array_equal(expected, res)
-        # dr.printInput(M)
-        # dr.printRes(M, res, expected)
+        res = tr.treeToBND(M)
+        np.testing.assert_array_equal(expected, res)
+        dr.printInput(M)
+        dr.printRes(M, res, expected)
+
+        print(" FIN TREE")
 
 class TestSparseToBND(unittest.TestCase):
 

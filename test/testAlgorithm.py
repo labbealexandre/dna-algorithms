@@ -10,8 +10,6 @@ class TestTreeToBND(unittest.TestCase):
 
     """Test case for treeToBND method"""
 
-    print(" DEBUT TREE")
-
     def test_simple(self):
         M = np.array([
             [0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -41,8 +39,6 @@ class TestTreeToBND(unittest.TestCase):
         np.testing.assert_array_equal(expected, res)
         dr.printInput(M)
         dr.printRes(M, res, expected)
-
-        print(" FIN TREE")
 
 class TestSparseToBND(unittest.TestCase):
 

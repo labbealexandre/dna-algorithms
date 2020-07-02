@@ -128,7 +128,6 @@ def getSortedNodes(degrees, n, auxG):
     highDegrees = np.array(highDegrees)
 
     tmp = auxG.out_degree(highDegrees[:,0])
-    print(tmp)
     if len(tmp) == 0:
         outDegrees = np.array([])
     elif len(tmp) == 1:
@@ -145,7 +144,6 @@ def getSortedNodes(degrees, n, auxG):
         highOutDegrees = np.array([])
 
     tmp = auxG.in_degree(highDegrees[:,0])
-    print(tmp)
     if len(tmp) == 0:
         inDegrees = np.array([])
     elif len(tmp) == 1:

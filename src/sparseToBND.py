@@ -4,7 +4,6 @@ from src import chrono as ch
 from src import draw as dr
 import numpy as np
 import networkx as nx
-from time import time
 
 def chooseHelpingNode(helpingList, lowDegrees, src, dst, M, way=0):
     if way == 0:

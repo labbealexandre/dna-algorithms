@@ -3,7 +3,7 @@
 
 \begin{document}
 
-\section{Modification of the algorithm}
+\section{Sparse graph - bound degree : $12\Delta_{avg}$ to $6\Delta_{avg}$}
 
 \subsection{Bound degree of the low degree nodes}
 
@@ -54,8 +54,85 @@ The final degree of a strict high degree node is at most $4\Delta_{avg}$.
 Because it is not connected to any high-in or high-out degree nodes.
 By doing so there are more edges to replace.
 But still we have $ A + B <= m$
-because the edges to replace are between High degree nodes.
-Also this doesn't change the final degree of high-in or
-high-out degree nodes which is at most $6\Delta_{avg} + 1$.
+because the edges to replace are between High degree nodes.\\
+% Also this doesn't change the final degree of high-in or
+% high-out degree nodes which is at most $6\Delta_{avg} + 1$.
+
+It also diminishes a lot the max degree of High out(in) degree nodes.
+Because that way it will not be in any melhorn tree.
+If the node is both high out and high in degree, it's final degree will
+be 2. Otherwise it will be inferior to $1+2\Delta_{avg}$.
+
+\newpage
+\section{Sparse graph : try to get a constant bound}
+
+\subsection{Introduce a new parameter $c$ to have $\beta_i=c-\frac{\alpha_i}{2}$}
+
+The idea is to classify the degrees in another way and then to do a
+quite same reasoning. Let's note $C$ the constant degree we wish to
+obtain as a degree bound. We note: $c = \frac{C}{6}$ and $n_l = \frac{m}{c}$.
+$n_l$ corresponds to the number of low degrees. In the previous version
+we had chosen $n_l = \frac{m}{\Delta_{avg}} = \frac{m}{\frac{2m}{n}} = \frac{n}{2}$
+which is the half.\\
+
+The other nodes are high degree nodes and we also change the definition
+of high-out(in) degree nodes. These are the nodes with out(in)
+degree $> 2c$.\\
+
+Let's do the first step, we replace all the edges between high degree nodes.
+There are B edges to replace.We now decide to choose $\beta_i$
+that way: $$\beta_i = c - \frac{\alpha_i}{2}$$
+Before thanks to pigeon holes principle we were sure that $\beta_i$
+was positive. But now we have not this guarantee. To be sure that
+$\beta_i$ will always be positive we need to study the worst case.\\
+
+Let's sort the degrees. [i, ..., nl] are the low degree nodes and
+[nl+1, ..., n] are the high ones. We take a look at the total degree:
+$$n\Delta_{avg} = \sum_{i < nl} \alpha_i + \alpha_{nl} + \sum_{i > nl} \alpha_i$$
+$$n\Delta_{avg} >= \alpha_{nl} + \sum_{i > nl} \alpha_i$$
+and if $i > nl$ then $\alpha_i > \alpha_nl$ because the nodes are sorted. So
+$$n\Delta_{avg} >= \alpha_{nl}(n-nl+1)$$
+$$\alpha_{nl} <= \frac{n\Delta_{avg}}{n-nl+1} <= \frac{n\Delta_{avg}}{n-nl}$$
+And all the low degree nodes have this bound.
+Let's find a condition on c to have $\beta_i >= 0$:
+$$c - \frac{n\Delta_{avg}}{2(n-nl)} >= 0$$
+$$2(n-\frac{m}{c})*c >= n\Delta_{avg}$$
+$$c >= \frac{n\Delta_{avg}+2m}{2n}$$
+$$c >= \frac{2m}{n} = \Delta_{avg}$$
+So we didn't found a better bound than previously...
+We could do the same reasoning but we would have a bound of $6c > 6\Delta_{avg}$.
+
+\subsection{Introduce a second parameter $d$ to have $\beta_i=c-\frac{\alpha_i}{d}$}
+
+Let's find a sufficient condition on d to have $\sum_{i} \beta_i >= B$
+$$\sum_{i} \beta_i = m - \frac{1}{d}\sum_{i} \alpha_i$$
+So $d >= 2$ is sufficient because we still have $\sum_{i} \alpha_i <= 2A$.\\
+
+Now we also need sufficient conditions on d and c to have $\beta_i >= 0$
+Let's note $k = \frac{n_l}{n}$ which is the fraction of low degree nodes.
+We have $$c = \frac{\Delta_{avg}}{2k}$$
+and $$\alpha_i <= \frac{n\Delta_{avg}}{n-n_l} = \frac{\Delta_{avg}}{1-k}$$
+So $$\beta_i >= c - \frac{\Delta_{avg}}{d(1-k)}$$
+
+So by writing equivalent inequalities :
+$$c - \frac{\Delta_{avg}}{d(1-k)} >= 0$$
+$$\frac{\Delta_{avg}}{2k} >= \frac{\Delta_{avg}}{d(1-k)}$$
+$$2k <= d(1-k)$$
+$$d >= \frac{2k}{1-k}$$
+So this is a sufficient condition to have $\beta_i >= 0$\\
+
+Now let's calculate the bound on low degree node :
+$$\gamma_i <= 3(2\beta_i+\alpha_i)$$
+$$\gamma_i <= 3(2c - 2\frac{\alpha_i}{d} + \alpha_i)$$
+$$\gamma_i <= \frac{3\Delta_{avg}}{k} + 3\alpha_i\frac{d-2}{d}$$
+And because $\alpha_i <= \frac{\Delta_{avg}}{1-k}$
+$$\gamma_i <= 3\Delta_{avg}\left(\frac{1}{k}+\frac{1-\frac{2}{d}}{1-k}\right)$$
+
+
+If we choose $d = \frac{2k}{1-k}$ we have
+$$\gamma_i <= 3\Delta_{avg}\left(\frac{1}{k}+\frac{1-\frac{1-k}{k}}{1-k}\right)$$
+$$\gamma_i <= \frac{3\Delta_{avg}}{1-k}$$\\
+Let's note M the bound of $\gamma_i$ we will have
+$ M >= \frac{3\Delta_{avg}}{1-k} >= 6\Delta_{avg}$ if $k >= 0.5$
 
 \end{document}

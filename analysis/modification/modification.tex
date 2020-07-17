@@ -154,4 +154,47 @@ Then $$\gamma_i <= 12\Delta_{avg}\left(1-\frac{1}{d}\right)$$
 And if we want this bound to be lower than $6\Delta_{avg}$ then $d = 2$
 So it corresponds to the initial definition of $\beta_i$ 
 
+\newpage
+
+\section{Use of high degree nodes to help}
+
+Let's drop the definition of $\beta_i$ and consider the problem in another
+way. Recall that we have to help enough edges (B), and if we are able to help
+$m - \frac{1}{2}\sum_{i \in L}\alpha_i$ with L the set of low degree nodes,
+it is sufficient.\\
+
+Without helping edges, a low degree node will have a final degree lower
+than $\gamma_i <= 3*\alpha_i$. Let's try to optimize the bound of the
+total degree of low degree nodes M. we have a budget of
+$$M - \sum_{i \in L}3*\alpha_i$$
+degrees left.
+Helping an edge has a cost of 6 (at most 2 melhorn trees)
+So we can help $$\frac{M}{6} - \frac{1}{2}\sum_{i \in L}\alpha_i$$
+edges.
+So let's try to find M to have
+$$\frac{M}{6} - \frac{1}{2}\sum_{i \in L}\alpha_i = m - \frac{1}{2}\sum_{i \in L}\alpha_i$$
+It leads to
+$$M = 6m$$
+and so if we distribute the charge equally then the bound of a low degree node
+will be $$\gamma_i <= \frac{6m}{\frac{n}{2}} = 6\Delta_{avg}$$
+
+So we didn't manage to reduce the bound unfortunately. But we can add a
+new modification. The idea is to use some of the high degree nodes to help too. It enables
+us to increase our budget. Now we note M in order to have $\frac{M}{2}$
+to be the bound of the total degree of low degree nodes and also for high
+degree nodes. That's way M is the bound of the total degree.
+
+Our budget is now :
+$$M - 3\sum_{i \in L}\alpha_i - \sum_{i \in H}\alpha_i$$
+We have $\sum_{i \in H}\alpha_i <= 2m$
+So our budget is greater than
+$$M - 3\sum_{i \in L}\alpha_i -2m$$
+which enables us to help
+$$\frac{M}{6} - \frac{1}{2}\sum_{i \in L}\alpha_i - \frac{m}{3}$$
+edges. Again let's try to find the best M.
+$$\frac{M}{6} - \frac{1}{2}\sum_{i \in L}\alpha_i - \frac{m}{3} = m - \frac{1}{2}\sum_{i \in L}\alpha_i$$
+$$M = 8m$$
+And then by distributing equally the charge, we have a degree bound of
+$$\frac{M}{n} = \frac{4*2m}{n} = 4\Delta_{avg}$$
+
 \end{document}

@@ -7,23 +7,25 @@
 
 \section{Maximum degree of $4\Delta_{avg} + 5$}
 
+Maciek: Intro to the algorithm, comparison with DISC algorithm.
+(high degree nodes participate as helpers, H-H edges are replaced, low degree nodes are $n/4$ of all nodes)
+
 \subsection{Algorithm}
 
-We partition the nodes into two subsets $L$, called the low degree nodes and $H$, called
+The algorithm partitions the nodes into two subsets: $L$, called the low degree nodes and $H$, called
 the high degree nodes. The low-degree nodes are
-the $n_L := \frac{n}{4}$ nodes with the lowest degree, and the high degree nodes
+the $\frac{n}{4}$ nodes with the minimal degree, and the high degree nodes
 are the remaining ones.
-Among the high degree nodes, we distinguish the set $HO$ ($HI$), called the high-out degree nodes (resp. high-in degree) that contain nodes whose out-degree (resp. in-degree) is greater than
+Among the high degree nodes, we distinguish the set $HO$ (resp. $HI$), called the high-out degree nodes (resp. high-in degree) that contain nodes whose out-degree (resp. in-degree) is greater than
 $2\Delta_{avg}$.
 Note that high degree nodes can be neither high-out nor high-in degree.
 
-The algorithm replaces all the initial connections between high degree nodes with 2-hop routes through an intermediate node.
-We say that an intermediate node \emph{helps} (i.e., is a \emph{helper}) an edge between two high degree nodes.
+The algorithm replaces all the initial edges between high degree nodes with 2-hop paths through an intermediate node.
+We say that an intermediate node \emph{helps} (is a \emph{helper}) an edge between two high degree nodes.
 We say that the edges added to (and from) intermediate nodes are \emph{intermediate edges}.
-The algorithm uses both low and high degree nodes as helpers. And we denote
-$\beta_i$ as the limit on number of edges the node $i$ can help.
-Let's also denote $\alpha_i$ its initial degree prior to the execution of 
-the algorithm.
+The algorithm uses both low and high degree nodes as helpers.
+For a node $i$, we denote $\beta_i$ as the limit on number of edges the node $i$ can help.
+We denote $\alpha_i$ the initial degree of node $i$ (prior to the execution of the algorithm).
 
 We choose the values $\beta_i$ in the following way:
 \begin{itemize}
@@ -32,28 +34,26 @@ We choose the values $\beta_i$ in the following way:
   \item for $i \in H$ we set
   $\beta_i = max(\lceil\frac{2}{3}\Delta_{avg}-\frac{1}{6}\alpha_i\rceil, 0)$
 \end{itemize}
-We'll justify that these values are positive.
+We'll later justify that these values are positive.
 
-The algorithm reduces the degree of $HI$ (resp. $HO$) nodes by forming a Mehlhorn tree out of its ingoing (resp. outgoing) neigbours.
+The algorithm reduces the degree of $HI$ (resp. $HO$) nodes by forming a~Mehlhorn tree out of its ingoing (resp. outgoing) neighbors.
+For nodes that are both high in-degree and high out-degree we construct two separate Mehlhorn trees: an ingoing one and an outgoing one.
 It forms Mehlhorn trees out of both initial and intermediate edges.
 
-\textbf{not precise}
 
-
-Once we replaced the initial edges between high-degree nodes with intermediate nodes,
-we do melhorn trees with the incoming edges of high-in-degree
-nodes and with outgoing edges of high-out-degree nodes.
-Note that, some high-in and high-out-degree nodes may have helped nodes.
-In that case we do not include those helped nodes in the melhorn tree of the helper.
+High-in and high-out degree nodes may help other nodes (that are also $H$).
+%Then, an intermediate edge is constructed, and we skip this node while building a Mehlhorn tree of its neighbors ().
+When a high-out degree node $i$ helps a high degree node $j$, we skip $j$ while building an outgoing Mehlhorn tree of $i$ (and similarly if $i$ is high-in degree node).
+This is done for two reasons. First, this would be unnecessary because they are already connected directly, but second, we don't want a high degree node involved in too many Mehlhorn trees of its neighbors.
 
 
 \medskip
 
 Now we argue that our choice of $\beta_i$ is positive for low degree nodes.
-Let's sort the the nodes in ascending degree order, so that first
+To this end, we sort the the nodes in ascending degree order, and then the first
 $\langle 1, \ldots, n/4\rangle$ nodes are the low-degree ones and
-last $\langle n/4 +1, \ldots, n\rangle$ nodes are the high-degree ones.
-The total degree is then
+the last $\langle n/4 +1, \ldots, n\rangle$ nodes are the high-degree ones.
+The sum of degrees of all nodes is then
 
 $$n\Delta_{avg} = \sum_{i < n/4} \alpha_i + \alpha_{n/4} + \sum_{i > n/4} \alpha_i \geq \alpha_{n/4} + \sum_{i > n/4} \alpha_i \geq \alpha_{n/4}(n-n/4+1),$$
 where the last inequality follows as 
@@ -62,23 +62,31 @@ Than for all $i \in L$
 $$\alpha_i \leq \alpha_{n/4} \leq \frac{n\Delta_{avg}}{n-n/4+1} \leq \frac{n\Delta_{avg}}{n-n/4} \leq \frac{4}{3}\Delta_{avg},$$
 and thus for all $i \in L$ we have $\beta_i \geq 0$.
 
-% Now we claim that we have sufficient number of edges available as helpers
-% (ie., ths sum of $\beta_i$ of all nodes is sufficient).
-For the algorithm to be well-defined, we must have the sufficient
-number of helping nodes to help all edges between high degree nodes,
-i.e., $\sum_i \beta_i \geq B$ (1).
-Recall that our algorithm helps only high degree nodes.
-Let $B$ be the number of initial edges between high degree nodes, and let $A$ be the number of initial edges in which a low degree node is involved.
-In total, these sum to all edges:
-$$m = A + B$$
+\medskip
 
+Now we claim that we have sufficient number of edges available as helpers
+ (ie., ths sum of $\beta_i$ of all nodes is sufficient).
+%For the algorithm to be well-defined, we must have the sufficient
+%number of helping nodes to help all edges between high degree nodes,
+%i.e., 
+Let $B$ be the number of initial edges between high degree nodes.
+We need a helper for each of them, thus
+\begin{equation}
+  \label{eq:betaB}
+ \sum_i \beta_i \geq B
+\end{equation}
+Recall that our algorithm helps only high degree nodes.
+Let $A$ be the number of initial edges in which a low degree node is involved.
+In total, these sum to all edges,
+$$m = A + B\enspace.$$
+%
 Now we bound the number of edges $B$ the algorithm helps.
 Each edge counted in $A$ involves at most $2$ low degree nodes, thus
 $\sum_{i \in L}\alpha_i \leq 2A$.
 This gives us
-$$B \leq m - \frac{1}{2}\sum_{i \in L}\alpha_i$$
-
-Now we show that our choice of $\beta_i$ satisfies the condition (1).
+$$B \leq m - \frac{1}{2}\sum_{i \in L}\alpha_i\enspace.$$
+%
+Now we show that our choice of $\beta_i$ satisfies the condition \eqref{eq:betaB}.
 For low degree nodes $L$ we have   $\beta_i \geq \frac{2}{3}\Delta_{avg}-\frac{1}{2}\alpha_i$
 and thus
 
@@ -87,114 +95,64 @@ and thus
   $\beta_i \geq \frac{2}{3}\Delta_{avg}-\frac{1}{6}\alpha_i$
   and thus
   $$\sum_{i \in H}\beta_i \geq \frac{2}{3}\cdot\frac{3n}{4}\Delta_{avg} - \frac{1}{6}\sum_{i \in H}\alpha_i \geq m - \frac{1}{6}\sum_{i \in H}\alpha_i \geq m - \frac{1}{3}m,$$
-  where the last inequaliy follows from $\sum_{i \in H}\alpha_i \leq 2m$.
+  where the last inequality follows from $\sum_{i \in H}\alpha_i \leq 2m$.
 Finally, we obtain a lower bound on
 $\sum_{i}\beta_i$
 $$\sum_{i}\beta_i \geq m - \frac{1}{2}\sum_{i \in L}\alpha_i \geq B,$$
 and we conclude that the algorithm has a sufficient number of
-helping edges, and is well-defined.
+helping edges, and thus it is well-defined.
 
 \medskip
 
-Finally we evaluate the maximal final degree of the nodes.
+Finally, we evaluate the maximal final degree of the nodes.
 Let $\gamma_i$ be the final degree of the node $i$.
-The degree of each node may increase beyond its initial degree because it helps other nodes, and, more importantly, because it may participate in Mehlhorn trees of its neigbours.
+The degree of each node may increase beyond its initial degree because it helps other nodes, and, more importantly, because it may participate in Mehlhorn trees of its neighbors.
 
 \medskip
 
-A low degree node may be involved in Mehlhorn trees of all its neighbours (both initial and intermediate). 
-The total number of the node's neighbours is the number of its initial neighbours $\alpha_i$
-summed with at most two high degree nodes per each edge it helps, in total $\alpha_i + 2\beta_i$.
+A low degree node may be involved in Mehlhorn trees of all its neighbors (both initial and intermediate). 
+The total number of the node's neighbors is the number of its initial neighbors $\alpha_i$
+plus at most two high degree nodes per each edge it helps, in total $\alpha_i + 2\beta_i$.
 A participation in each Mehlhorn tree adds at most $3$ edges to a node, thus
 
-  $$\gamma_i \leq 3(2\beta_i +\alpha_i) \leq 4\Delta_{avg} + 5,$$
+  $$\gamma_i \leq 3(2\beta_i +\alpha_i) \leq 4\Delta_{avg} + 6,$$
   where the last inequality follows from 
-  $\beta_i = \lceil\frac{2}{3}\Delta_{avg}-\frac{1}{2}\alpha_i\rceil < \frac{2}{3}\Delta_{avg} - \frac{1}{2}\alpha_i + 1$, and the fact that $\gamma_i$ is an integer.
+  $\beta_i = \lceil\frac{2}{3}\Delta_{avg}-\frac{1}{2}\alpha_i\rceil < \frac{2}{3}\Delta_{avg} - \frac{1}{2}\alpha_i + 1$.
 
 \medskip
 
-A node $i$ which is both high in and high out degree (i.e., $i \in HO \cap HI$),
-will be at the root of two melhorn trees on its initial edges. And
-because of the algorithm definition, this node cannot be involved
-in a \emph{helper's} melhorn tree. Without helping, this node has a final
-degree of 2. Futhermore because $\alpha_i >= 4\Delta_{avg}$, $\beta_i = 0$ (i.e., it will not help), thus
-$$\gamma_i = 2$$
+A node $i$ that is both high in and high out degree (i.e., $i \in HO \cap HI$),
+becomes the root of two Mehlhorn trees. 
+The algorithm never involves such node in helper's Mehlhorn tree.
+All of $i$'s initial edges are replaced with two edges that are leading to Mehlhorn trees that contain all of its neighbors (and possibly some intermediate nodes).
+The node $i$ cannot help other nodes because $\alpha_i \geq 4\Delta_{avg}$, and thus $\beta_i = 0$, and finally $\gamma_i = 2$.
 
 \medskip
 
-If $i \in HO \setminus HI$ (same reasoning for $i \in HI \setminus HO$),
-let's partition its initial degree $\alpha_i$ into intial out degree $\alpha_i^+$
-an intial in degree $\alpha_i^-$. From $i \in HO \setminus HI$,
-$\alpha_i^+ \geq 2\Delta_{avg}$ and $\alpha_i^- > 2\Delta_{avg}$.
-By doing the same reasoning as previously, the contribution of
-initial out-edges will be 1, because we do a melhorn from them
-and the contribution of intial in-edges will be $\alpha_i^-$.
-Again we add the contribution of helping other nodes.
+For $i \in HO \setminus HI$ (and similarly for $i \in HI \setminus HO$),
+we partition its initial degree $\alpha_i$ into initial out degree $\alpha_i^+$ and
+initial in degree $\alpha_i^-$. 
+From $i \in HO \setminus HI$, $\alpha_i^+ \geq 2\Delta_{avg}$ and $\alpha_i^- > 2\Delta_{avg}$.
+All initial outgoing edges are replaced with Mehlhorn trees, so $i$'s out-degree is $1$ (from connection to the Mehlhorn tree) plus $6$ per each edge it is helping (thus it is involved in at most $2$ Mehlhorn trees, each adding at most $3$ edges).
+Additionally, its in-going degree is $\alpha_i^-$, as each of its neighbors is either directly connected with it, or this connection is replaced by an intermediate node (that exchanges one edge for one edge).
+In total, the final degree of $i$ is
 $$\gamma_i \leq 1 + \alpha_i^- + 6\beta_i$$
 if $\beta_i = 0$, $\gamma_i \leq 2 + \alpha_i^- < 2 + 2\Delta_{avg}$
 else
-$$\gamma_i < 1 + \alpha_i^- + 6(\frac{2}{3}\Delta_{avg} - \frac{1}{6}\alpha_i + 1) = 8 + 4\Delta_{avg} - \alpha_i^+$$
-But $\alpha_i^+ > 2\Delta_{avg}$
-thus $$\gamma_i \leq 6 + 2\Delta_{avg}$$
+$$\gamma_i < 1 + \alpha_i^- + 6(\frac{2}{3}\Delta_{avg} - \frac{1}{6}\alpha_i + 1) =  4\Delta_{avg} - \alpha_i^+ + 7 < 2\Delta_{avg}+7,$$
+where the last inequality follows from $\alpha_i^+ > 2\Delta_{avg}$.
 
-A node $i$ which is neither high in nor high out degree (i.e., $i \in H \setminus (HI \cup HO)$),
-will not be involved in the melhorn trees from its initial neighbours. The algorithm
-has indeed replaced its initial connections with high degree nodes by
-intermediate nodes. And recall that \emph{helpers} do not involve
-the nodes they helped in their melhorn trees.
-One last time we add the contribution of helping nodes.
-$$\gamma_i \leq \alpha_i + 6\beta_i$$
-because $\alpha_i < 4\Delta_i$, $\beta_i = \lceil\frac{2}{3}\Delta_{avg}-\frac{1}{6}\alpha_i\rceil > 0$
-so $$\gamma_i < \alpha_i + 6(\frac{2}{3}\Delta_{avg}-\frac{1}{6}\alpha_i + 1)$$
-$$\gamma_i \leq 4\Delta_{avg} + 5$$
+A node $i$ that is neither high in nor high out degree (i.e., $i \in H \setminus (HI \cup HO)$),
+will not be involved in the Mehlhorn trees of its initial neighbors. The algorithm
+replaced its initial connections with high degree nodes using 
+intermediate nodes. And recall that helpers do not involve
+the nodes they helped in their Mehlhorn trees.
+The final degree of $i$ is
+$$\gamma_i \leq \alpha_i + 6\beta_i < \alpha_i + 6(\frac{2}{3}\Delta_{avg}-\frac{1}{6}\alpha_i + 1) < 4\Delta_{avg} + 6,$$
+where the second inequality follows from
+$\alpha_i < 4\Delta_i$ and $\beta_i = \lceil\frac{2}{3}\Delta_{avg}-\frac{1}{6}\alpha_i\rceil > 0$.
 
-% \begin{itemize}
-%   \item if $i \in HO \cap HI$, the intial connexions of i will not lead
-%   to melhorn trees because they have been replaced by connexions
-%   with an helper node. And because we forced it in the description
-%   of the algorithm, if this helper creates a melhorn tree, $i$ will
-%   not be involved in. So the degree of $i$ due to initial connexions
-%   will not increase. Even better because $i$ is both high-out and
-%   high-in degree, and making so two melhorn trees on intial in and out
-%   edges, this degree will decrease to 2. Like before we need to add
-%   the contribution in the degree of helping other nodes.
-%   $$\gamma_i \leq 2 + 6\beta_i$$
-%   if $\beta_i = 0$, $\gamma_i \leq 2$
-%   else $\beta_i = \lceil\frac{2}{3}\Delta_{avg}-\frac{1}{6}\alpha_i\rceil > 0$
-%   $$\gamma_i < 2 + 6(\frac{2}{3}\Delta_{avg} - \frac{1}{6}\alpha_i + 1) = 8 + 4\Delta_{avg} - \alpha_i$$
-%   But $\alpha_i > 4\Delta_{avg}$ so $\gamma_i \leq 7$
-%   \item if $i \in HO \setminus HI$ (same reasoning for $i \in HI \setminus HO$)\\\\
-%   Let's note $\alpha_i^+$ the initial out-degree of i and $\alpha_i^-$ the initial in-degree
-%   We have :
-%   \begin{enumerate}
-%     \item $\alpha_i = \alpha_i^+ + \alpha_i^-$
-%     \item $\alpha_i^+ \geq 2\Delta_{avg}$ because $i \in HO$
-%     \item $\alpha_i^- < 2\Delta_{avg}$ because $i \notin HI$
-%   \end{enumerate}
-%   By doing the same reasoning as previously, the contribution of
-%   initial out-edges will be 1, because we do a melhorn from them
-%   and the contribution of intial in-edges will be $\alpha_i^-$.
-%   Again we add the contribution of helping other nodes.
-%   $$\gamma_i \leq 1 + \alpha_i^- + 6\beta_i$$
-%   if $\beta_i = 0$, $\gamma_i \leq 2 + \alpha_i^- < 2 + 2\Delta_{avg}$
-%   else
-%   $$\gamma_i < 1 + \alpha_i^- + 6(\frac{2}{3}\Delta_{avg} - \frac{1}{6}\alpha_i + 1) = 8 + 4\Delta_{avg} - \alpha_i^+$$
-%   But $\alpha_i^+ > 2\Delta_{avg}$
-%   so $\gamma_i \leq 6 + 2\Delta_{avg}$
-%   \item if $i \in H \setminus (HI \cup HO)$, their will be no melhorn
-%   trees from the initial connexions because the out and in-degrees
-%   are less than $2\Delta_{avg}$. So the contribution of initial
-%   connexion will be equals to $\alpha_i$. One last time we add the
-%   contribution of helping nodes.
-%   $$\gamma_i \leq \alpha_i + 6\beta_i$$
-%   because $\alpha_i < 4\Delta_i$, $\beta_i = \lceil\frac{2}{3}\Delta_{avg}-\frac{1}{6}\alpha_i\rceil > 0$
-%   so $$\gamma_i < \alpha_i + 6(\frac{2}{3}\Delta_{avg}-\frac{1}{6}\alpha_i + 1)$$
-%   $$\gamma_i \leq 4\Delta_{avg} + 5$$
-% \end{itemize}
-
-\medskip
-
-Finally if we sum up these results, we can say that this algorithm will
-generate a DNA N with maximum degree of $4\Delta_{avg} + 5$.
+All of the above bounds combined guarantee that the algorithm produces a network
+with maximum degree of $4\Delta_{avg} + 7$.
 
 \end{document}

@@ -158,6 +158,8 @@ So it corresponds to the initial definition of $\beta_i$
 
 \section{Use of high degree nodes to help}
 
+\subsection{Presentation of the idea}
+
 Let's drop the definition of $\beta_i$ and consider the problem in another
 way. Recall that we have to help enough edges (B), and if we are able to help
 $m - \frac{1}{2}\sum_{i \in L}\alpha_i$ with L the set of low degree nodes,
@@ -196,5 +198,40 @@ $$\frac{M}{6} - \frac{1}{2}\sum_{i \in L}\alpha_i - \frac{m}{3} = m - \frac{1}{2
 $$M = 8m$$
 And then by distributing equally the charge, we have a degree bound of
 $$\frac{M}{n} = \frac{4*2m}{n} = 4\Delta_{avg}$$
+
+\subsection{Detailed part - First try}
+
+Let's note S the sum of the final degrees on all the nodes
+$$S = \sum_{i}\gamma_i$$
+We want to find a bound on it.
+The final degree $\gamma_i$ of a node after the algorithm comes from two sources:
+
+\begin{enumerate}
+  \item its connexions to its initial neighours, which may increase
+  if this one is involved in melhorn trees. If the node is lower degree node, the contribution of the initial
+  neighbours in the final degree will be at most $3\alpha_i$, if it
+  is a high degree node it will be $\alpha_i$ because after the helping
+  node procedure, it will not be connected to high degree nodes which
+  may create melhorn trees. If we sum on the nodes these contributions
+  on the final degrees, we have a total cost due to initial neighbours
+  which is at most
+  $$C_I = 3\sum_{i \in L}\alpha_i + \sum_{i \in H}\alpha_i$$
+  \item the connexions between high degrees nodes it will reroute.
+  We chose in the algorithm to be able to remove
+  $m - \frac{1}{2}\sum_{i \in L}\alpha_i$ because it is enough to
+  remove all connexions between high degree nodes. So it means
+  that in the worst case - when for each help, it increases the degree
+  of the helper by 6 - we can have our total degree increased by
+  $$C_H = 6m - 3\sum_{i \in L}\alpha_i$$
+\end{enumerate}
+
+$C_I$ and $C_H$ are upper bounds because they correspond to the worst
+cases. So we have
+
+$$S <= C_I + C_H$$
+$$S <= \sum_{i \in H}\alpha_i + 6m$$
+But we know that $\sum_{i \in H}\alpha_i <= 2m$
+so $$S = \sum_{i}\gamma_i <= 8m$$
+And $$\frac{8m}{n} = 4\Delta_{avg}$$
 
 \end{document}

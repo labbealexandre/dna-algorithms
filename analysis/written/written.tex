@@ -9,94 +9,104 @@
 
 \subsection{Algorithm}
 
-For each node i, let's denote $\alpha_i$ its initial degree before running
+For each node $i$, let's denote $\alpha_i$ its initial degree prior to the execution of 
 the algorithm.
-We separate the nodes in two subsets $L$ and $H$ which respectively contain
-low-degree nodes and high-degree nodes. The low-degree nodes are
-the $\frac{n}{4}$ nodes with the lowest degree, and the high-degree nodes
-are the other ones.
-Amongst the high-degree nodes, we call high-out-degree (resp. high-in-degree)
-an high-degree node the ones whose out-degree (resp. in-degree) is greater than
+We partition the nodes into two subsets $L$, called the low degree nodes and $H$, called
+the high degree nodes. The low-degree nodes are
+the $n_L := \frac{n}{4}$ nodes with the lowest degree, and the high degree nodes
+are the remaining ones.
+Among the high degree nodes, we distinguish the set $HO$ ($HI$), called the high-out degree nodes (resp. high-in degree) that contain nodes whose out-degree (resp. in-degree) is greater than
 $2\Delta_{avg}$.
-We note HO and HI the subsets of high-out and high-in-degree nodes.
-Note that high-degree nodes can be neither high-out nor high-in-degree.\\\\
-We want to remove all the initial connexions between high-degree nodes.
-To remove an edge, we use the help of another node which will reroute
-it, by adding a first edge from the source to him and a second
-one from him to the destination.
-Both low and high-degree nodes can help, and we note
-$\beta_i$ the number of edges a node i can help.\\\\
-Let's choose $\beta_i$ that way:
+Note that high degree nodes can be neither high-out nor high-in degree.
+
+The algorithm replaces all the initial connections between high degree nodes with 2-hop routes through an intermediate node.
+We say that an intermediate node \emph{helps} (i.e., is a \emph{helper}) an edge between two high degree nodes.
+We say that the edges added to (and from) intermediate nodes are \emph{intermediate edges}.
+The algorithm uses both low and high degree nodes as helpers, and we denote
+$\beta_i$ as the limit on number of edges the node $i$ can help.
+
+We choose the values $\beta_i$ in the following way:
 \begin{itemize}
-  \item if $i \in L$, then
-  $\beta_i = \lceil\frac{2}{3}\Delta_{avg}-\frac{1}{2}\alpha_i\rceil \in \mathbb{N}$
-  \item if $i \in H$, then
-  $\beta_i = max(\lceil\frac{2}{3}\Delta_{avg}-\frac{1}{6}\alpha_i\rceil, 0) \in \mathbb{N}$
+  \item for $i \in L$ we set
+  $\beta_i = \lceil\frac{2}{3}\Delta_{avg}-\frac{1}{2}\alpha_i\rceil$
+  \item for $i \in H$ we set
+  $\beta_i = max(\lceil\frac{2}{3}\Delta_{avg}-\frac{1}{6}\alpha_i\rceil, 0)$
 \end{itemize}
-Thanks to helping nodes, we remove all the initial connexions between high-degree nodes.\\\\
-Before going further in the algorithm, let's justify that for a low-degree
-node i, $\beta_i$ is indeed positive because it may not be intuitive.\\\\
-We can show it by doing a observation on low-degree nodes.
-Let's study a general case where the low-degree nodes are the
-$n_l$ lowest ones and the high-degrees nodes the other ones ($0 < n_l < n$).
-Let's sort the degrees. [i, ..., nl] are the low-degree nodes and
-[nl+1, ..., n] are the high-degree ones. We take a look at the total degree:
-$$n\Delta_{avg} = \sum_{i < nl} \alpha_i + \alpha_{nl} + \sum_{i > nl} \alpha_i$$
-$$n\Delta_{avg} \geq \alpha_{nl} + \sum_{i > nl} \alpha_i$$
-and if $i > nl$ then $\alpha_i > \alpha_nl$ because the nodes are sorted. So
-$$n\Delta_{avg} \geq \alpha_{nl}(n-nl+1)$$
-$$\forall i \in L, \alpha_i \leq \alpha_{nl} \leq \frac{n\Delta_{avg}}{n-nl+1} \leq \frac{n\Delta_{avg}}{n-nl}$$
-By replacing $n_l$ with $\frac{n}{4}$, we have
-$\forall i \in L, \alpha_i \leq \frac{4}{3}\Delta_{avg}$ and so $\beta_i >= 0$\\\\
-Once we have removed the initial edges between high-degree nodes,
+We'll justify that these values are positive.
+
+Now we reduce the degree of $HI$ (resp. $HO$) nodes by forming a Mehlhorn tree out of its ingoing (resp. outgoing) neigbours.
+We form Mehlhorn trees out of both initial and intermediate edges.
+
+\textbf{not precise}
+
+
+Once we replaced the initial edges between high-degree nodes with intermediate nodes,
 we do melhorn trees with the incoming edges of high-in-degree
 nodes and with outgoing edges of high-out-degree nodes.
 Some high-in and high-out-degree nodes may have helped nodes.
 In that case we do not include those helped nodes in the melhorn tree of the helper.
 
+
+\medskip
+
+Now we argue that our choice of $\beta_i$ is positive for low degree nodes.
+Let's sort the the nodes in ascending degree order, so that $\langle 1, \ldots, n/4\rangle$ are the low-degree nodes and
+$\langle n/4 +1, \ldots, n\rangle$  are the high-degree ones.
+The total degree is then
+
+$$n\Delta_{avg} = \sum_{i < n/4} \alpha_i + \alpha_{n/4} + \sum_{i > n/4} \alpha_i \geq \alpha_{n/4} + \sum_{i > n/4} \alpha_i \geq \alpha_{n/4}(n-n/4+1),$$
+where the last inequality follows as 
+for all $i > n/4$ we have $\alpha_i > \alpha_{n/4}$ (the nodes are sorted).
+Than for all $i \in L$
+$$\alpha_i \leq \alpha_{n/4} \leq \frac{n\Delta_{avg}}{n-n/4+1} \leq \frac{n\Delta_{avg}}{n-n/4} \leq \frac{4}{3}\Delta_{avg},$$
+and thus for all $i \in L$ we have $\beta_i \geq 0$.
+
 \subsection{Analysis}
 
-The first thing to know is if we are able, with our defintion of $beta_i$
-to help enough edges. Let's note B the number of edges to remove and
-A the number of edges in which a low degree node is involved.
-B exactly equals to the number of initial edges between high-degree
-nodes because those are the edges we want to remove. So we have :
+Now we claim that we have sufficient number of edges available as helpers ($\sum \beta_i$).
+Recall that our algorithm helps only high degree nodes.
+Let $B$ be the number of initial edges between high degree nodes, and let $A$ be the number of initial edges in which a low degree node is involved.
+In total, these sum to all edges:
 $$m = A + B$$
-Furthermore we have
-$$\sum_{i \in L}\alpha_i \leq 2A$$
-Because for an extreme case, there is no edges between low
-and high-degree nodes so $\sum_{i \in L}\alpha_i = 2A$.
-Otherwise we have connexions with high-degree nodes which will
-increase A for a given total degree $\sum_{i \in L}\alpha_i$.
-Then it leads to
+
+Now we bound the number of edges $B$ the algorithm helps.
+Each edge from $A$ (\textbf{A is not a set}) involves at most $2$ low degree nodes, thus
+$\sum_{i \in L}\alpha_i \leq 2A$.
+This gives us
 $$B \leq m - \frac{1}{2}\sum_{i \in L}\alpha_i$$
-It means that beeing able to help more than $m - \frac{1}{2}\sum_{i \in L}\alpha_i$
-is sufficient to remove all the initial edges between high-degree nodes.
-Now we show that our choice of $\beta_i$ allows us to help a sufficient number
-of edges. To this end we sum the $\beta_i$.
-\begin{itemize}
-  \item if $i \in L$,
-  $\beta_i \geq \frac{2}{3}\Delta_{avg}-\frac{1}{2}\alpha_i$
-  $$\sum_{i \in L}\beta_i \geq \frac{2}{3}*\frac{n}{4}\Delta_{avg} - \frac{1}{2}\sum_{i \in L}\alpha_i$$
-  $$\sum_{i \in L}\beta_i \geq \frac{m}{3} - \frac{1}{2}\sum_{i \in L}\alpha_i$$
-  \item if $i \in H$,
+
+For the algorithm to be well-defined, we must have the sufficient number of helping nodes to help all edges between high degree nodes, i.e., $\sum_i \beta_i \geq B$.
+Now we show that our choice of $\beta_i$ satisfies this condition.
+For low degree nodes $L$ we have   $\beta_i \geq \frac{2}{3}\Delta_{avg}-\frac{1}{2}\alpha_i$
+and thus
+
+  $$\sum_{i \in L}\beta_i \geq \frac{2}{3}\cdot\frac{n}{4}\Delta_{avg} - \frac{1}{2}\sum_{i \in L}\alpha_i \geq \frac{m}{3} - \frac{1}{2}\sum_{i \in L}\alpha_i$$
+
+For high degree nodes $H$ we have 
   $\beta_i \geq \frac{2}{3}\Delta_{avg}-\frac{1}{6}\alpha_i$
-  $$\sum_{i \in L}\beta_i \geq \frac{2}{3}*\frac{3n}{4}\Delta_{avg} - \frac{1}{6}\sum_{i \in H}\alpha_i$$
-  $$\sum_{i \in L}\beta_i \geq m - \frac{1}{6}\sum_{i \in H}\alpha_i$$
-  And because $\sum_{i \in H}\alpha_i \leq 2m$
-  We have
-  $$\sum_{i \in L}\beta_i \geq m - \frac{1}{3}m$$
-\end{itemize}
-We sum our two previous results in order to have a lower bound on
+  and thus
+  $$\sum_{i \in H}\beta_i \geq \frac{2}{3}\cdot\frac{3n}{4}\Delta_{avg} - \frac{1}{6}\sum_{i \in H}\alpha_i \geq m - \frac{1}{6}\sum_{i \in H}\alpha_i \geq m - \frac{1}{3}m,$$
+  where the last inequaliy follows from $\sum_{i \in H}\alpha_i \leq 2m$.
+We sum our two previous results in order to obtain a lower bound on
 $\sum_{i}\beta_i$
-$$\sum_{i}\beta_i \geq m - \frac{1}{2}\sum_{i \in L}\alpha_i$$
-And that way we are able to help enough edges.\\\\
-Finally we evaluate the maximal final degree of the nodes. We note
-$\gamma_i$ the final degree of the node i. We study the different
-subsets of nodes to find an upper bound for each case. For any node,
-to be involved in a melhorn tree can increase a lot its initial degree.
-For one initial connexion which will be replaced in a melhorn tree,
-it can lead at the end to three connexions.
+$$\sum_{i}\beta_i \geq m - \frac{1}{2}\sum_{i \in L}\alpha_i \geq B,$$
+and we conclude that the algorithm is able to help enough edges, and is well-defined.
+
+\medskip
+
+Finally we evaluate the maximal final degree of the nodes.
+Let's denote 
+$\gamma_i$ as the final degree of the node $i$.
+The degree of each node may increase beyond its initial degree because it helps other nodes, and, more importantly, because it may participate in Mehlhorn trees of its neigbours.
+
+A low degree node may be involved in Mehlhorn trees of all its neighbours (\textbf{both initial and intermediate}). 
+The total number of its neighbours is the number of its initial neighbours $\alpha_i$ plus at most two high degree nodes per each edge it helps, in total $\alpha_i + 2\beta_i$.
+A participation in each Mehlhorn tree adds at most $3$ edges to a node, thus
+
+  $$\gamma_i \leq 3(2\beta_i +\alpha_i) \leq 4\Delta_{avg} + 5,$$
+  where the last inequality follows from 
+  $\beta_i = \lceil\frac{2}{3}\Delta_{avg}-\frac{1}{2}\alpha_i\rceil < \frac{2}{3}\Delta_{avg} - \frac{1}{2}\alpha_i + 1$, and the fact that $\gamma_i$ is an integer.
+
 
 \begin{itemize}
   \item if $i \in L$, in the worst case, the initial edges from i are

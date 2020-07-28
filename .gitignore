@@ -7,4 +7,5 @@ perf/
 *.fls
 *.aux
 *.fdb_latexmk
-modification.pdf
+*.pdf
+*.synctex.gz

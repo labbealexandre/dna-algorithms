@@ -6,7 +6,7 @@ def getAverageDegree(M):
     n, _ = M.shape
     auxM = np.ceil(M)
     m = auxM.sum()
-    return 2*m/n
+    return 2.0*m/n
 
 def getMaxDegree(G):
     degrees = sorted([d for n, d in G.degree()], reverse=True)

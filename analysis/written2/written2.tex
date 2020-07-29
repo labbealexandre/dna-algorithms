@@ -75,7 +75,7 @@ Remarks.
 When a node is assigned to help one of its incident edges, it is the most efficient.
 However, the analysis holds for arbitrary assignments.
 
-\subsection{Examples}
+\subsection{Example}
 
 \begin{figure}[!htb]\centering
 \begin{minipage}[b]{.3\linewidth}
@@ -89,12 +89,11 @@ However, the analysis holds for arbitrary assignments.
         \node[main node] (4) [below right of=1] {4};
 
         \path[every node/.style={font=\sffamily\small}]
-        (2) edge[dashed] node [above,rotate=45] {0.7} (1)
-        (4) edge node [below] {0.3} (2);
+        (2) edge[dashed] node [above,rotate=45] {$W_1$} (1)
+        (4) edge node [below] {$W_2$} (2);
       \end{tikzpicture}
   \end{adjustbox}
-  \captionsetup{labelformat=empty}
-  \caption{Demand graph $G_D$}
+  \caption*{Demand graph $G_D$}
 \end{minipage}
 \hspace{0.2 cm}
 \begin{minipage}[b]{.3\linewidth}
@@ -108,14 +107,13 @@ However, the analysis holds for arbitrary assignments.
     \node[main node] (4) [below right of=1] {4};
 
     \path[every node/.style={font=\sffamily\small}]
-    (1) edge node [above,rotate=45] {0.3} (2)
-    (2) edge[dashed] node [below,rotate=-45] {0.7} (3)
-    (3) edge[dashed] node [right] {0.7} (1)
-    (4) edge node [above,rotate=-45] {0.3} (1);
+    (1) edge node [above,rotate=45] {$W_2$} (2)
+    (2) edge[dashed] node [below,rotate=-45] {$W_1$} (3)
+    (3) edge[dashed] node [right] {$W_1$} (1)
+    (4) edge node [above,rotate=-45] {$W_2$} (1);
     \end{tikzpicture}
   \end{adjustbox}
-  \captionsetup{labelformat=empty}
-  \caption{Intermediate graph $G'$}
+  \caption*{Intermediate graph $G'$}
 \end{minipage}
 \hspace{0.2 cm}
 \begin{minipage}[b]{.3\linewidth}
@@ -129,13 +127,26 @@ However, the analysis holds for arbitrary assignments.
     \node[main node] (4) [below right of=1] {4};
 
     \path[every node/.style={font=\sffamily\small}]
-    (2) edge node [right] {} (3)
-    (3) edge node [above] {} (1)
-    (4) edge node [left] {} (1);
+    (1) edge node {} (2)
+    (2) edge node {} (3)
+    (3) edge node {} (1)
+    (4) edge node {} (1);
     \end{tikzpicture}
   \end{adjustbox}
-  \captionsetup{labelformat=empty}
-  \caption{Bounded network $N$}
+  \caption*{Bounded network $N$}
 \end{minipage}
+\caption{Running the algorithm on a simple example}
 \end{figure}
+
+In this example, $\Delta_{avg} = 1$ thus the limit of assistances
+for each node is $\lceil\Delta_{avg}/2\rceil = 1$. The edges $(2,1)$
+and $(4,2)$ are respectively assisted by the nodes $3$ and $1$.
+For each node $i$, a Mehlhorn tree is built on the set of nodes that
+assisted an edge connected to $i$.
+The initial degree of $3$ is $0$, thus there is no Mehlhorn tree from it.
+Next, $1$ and $4$ were both connected to one edge, and are respectively
+assisted by $3$ and $1$. The built Melhorn trees are simple edges.
+Finally, $2$ is connected to an outgoing and an ingoing edge, thus two
+Mehlhorn trees including the nodes $1$ and $3$, will be built from $2$.
+
 \end{document}

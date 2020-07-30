@@ -61,5 +61,5 @@ if choice == 1:
             results.append([EPL, _max, 12*avgDegree, edges])
 
     headers = ['EPL', 'max degree', 'theorical max degree', 'edges']
-    file = 'random_graphs.csv'
+    file = 'results/' + 'random_graphs.csv'
     ex.exportToCSV(file, headers, results)

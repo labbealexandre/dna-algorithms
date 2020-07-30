@@ -108,7 +108,7 @@ elif choice == 2:
         print("n = " + str(m) + " EPL = " + str(EPL) + ", max degree = " + str(_max))
 
     headers = ['nodes', 'EPL', 'max degree']
-    file = 'simple_wheel.csv'
+    file = 'results/' + 'simple_wheel.csv'
     results = []
     for m in range(1, n):
         line = [str(m), str(EPLs[m]), str(maxs[m])]
@@ -146,7 +146,7 @@ elif choice == 3:
                 # print("highOutIndex = " + str(i) + " highInIndex = " + str(j) + " EPL = " + str(EPL) + ", max degree = " + str(_max))
 
     headers = ['highOutIndex', 'highInIndex', 'EPL', 'max degree']
-    file = 'composed_wheels_n10.csv'
+    file = 'results/' + 'composed_wheels_n10.csv'
     ex.exportToCSV(file, headers, results)
 
 ### All permutations of n nodes and k high degree nodes
@@ -205,7 +205,7 @@ elif choice == 4:
 
     aux(np.zeros(n), np.zeros(n), 0, k)
     headers = ['highOutIndex', 'highInIndex', 'EPL', 'max degree']
-    file = 'composed_wheels_n48_k2.csv'
+    file = 'results/' + 'composed_wheels_n48_k2.csv'
     ex.exportToCSV(file, headers, results)
 
     print(tot, index)

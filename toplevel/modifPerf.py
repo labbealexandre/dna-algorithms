@@ -71,5 +71,5 @@ headers = [ 'n',
             '3 * average degree',
             '3 * average degree + 6'
           ]
-file = 'modif_results.csv'
+file = 'results/' + 'modif_results.csv'
 ex.exportToCSV(file, headers, results)

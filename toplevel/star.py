@@ -207,7 +207,7 @@ elif choice == 2:
 
     aux(np.zeros(k), 0)
     headers = ['highIndex', 'EPL', 'max degree']
-    file = 'composed_stars_k8_m5.csv'
+    file = 'results/' + 'composed_stars_k8_m5.csv'
     ex.exportToCSV(file, headers, results)
 
 ### Simple test for a superstar
@@ -281,7 +281,7 @@ elif choice == 4:
 
     aux(np.zeros(k), 0)
     headers = ['highIndex', 'EPL', 'max degree']
-    file = 'superstars_k10_m3.csv'
+    file = 'results/' + 'superstars_k10_m3.csv'
     ex.exportToCSV(file, headers, results)
 
 ### Simple test for a combination of superstars
@@ -357,5 +357,5 @@ elif choice == 6:
 
     aux(np.zeros(k), 0)
     headers = ['highIndex', 'EPL', 'max degree']
-    file = 'couple_superstars_k10_m4.csv'
+    file = 'results/' + 'couple_superstars_k10_m4.csv'
     ex.exportToCSV(file, headers, results)

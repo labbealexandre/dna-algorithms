@@ -184,7 +184,7 @@ def addHelpingNodes(_M, lowDegrees, M, edges):
         src, dst = edge[0], edge[1]
 
         # find the next volunteer
-        volunteer = chooseHelpingNode(helpingList, lowDegrees, src, dst, M, way=1)
+        volunteer = chooseHelpingNode(helpingList, lowDegrees, src, dst, M, way=0)
         volunteers.append(volunteer)
 
         _M[src, dst] = 0
@@ -236,17 +236,18 @@ def addBinarytrees(_M, N, highOutDegrees, highInDegrees):
 
     return [layers, trees]
 
-def sparseToBND(M, debug=False):
+def sparseToBND(G, debug=False):
 
     """
     Theorem 4 : get a Bounded Network Design from
     a request distribution such as the graph is sparse
     """
 
-    n = len(M)
+    n = len(G)
 
     # N will be the result unweighted graph
     N = np.zeros((n, n))
+    M = nx.to_numpy_matrix(G)
     auxM = np.ceil(M)
 
     auxG = nx.from_numpy_matrix(auxM, create_using=nx.MultiDiGraph())
@@ -261,7 +262,7 @@ def sparseToBND(M, debug=False):
 
     # Create a copy of a M, which will represents the G' distribution
     _M = np.copy(M)
-    if debug: dr.printInput(_M)
+    if debug: dr.printInput(G)
 
     # Find edges from high-out to high-in-degree nodes
     # And remove it thanks to an helping node wisely chosen
@@ -282,4 +283,6 @@ def sparseToBND(M, debug=False):
         for tree in trees:
             print(tree)
 
-    return [N, layers]
+    resG = nx.from_numpy_matrix(N)
+
+    return [resG, layers]

@@ -64,7 +64,7 @@ def sparseToBND2(G):
 
   M = nx.to_numpy_matrix(G)
   n = len(M)
-  avgDegree = ev.getAverageDegree(M)
+  avgDegree = ev.getAverageDegree(G)
 
   # N will be the result unweighted graph
   N = np.zeros((n, n))

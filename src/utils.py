@@ -62,3 +62,11 @@ def arrayToDictArray(arr):
 
     # Then we sort the result by the second column
     return res[res[:,1].argsort()]
+
+def normalizeGraph(G):
+    total = G.size(weight='weight')
+    for (u,v,w) in G.edges(data=True):
+        if 'weight' in w.keys():
+            w['weight'] /= total
+        else:
+            G[u][v]['weight'] = 1.0/total

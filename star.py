@@ -40,6 +40,7 @@ def simpleStar(subset, center, direction=ut.Direction.OUTGOING):
         raise NameError(str(direction) + ' is not a valid value for direction')
 
     G = nx.relabel_nodes(G, D)
+    ut.normalizeGraph(G)
     return G
 
 def simpleCycleGraph(subset):
@@ -51,6 +52,7 @@ def simpleCycleGraph(subset):
     G = nx.to_directed(G)
 
     G = nx.relabel_nodes(G, D)
+    ut.normalizeGraph(G)
     return G
 
 def severalStarGraphs(m, k, highSubsets):
@@ -70,6 +72,7 @@ def severalStarGraphs(m, k, highSubsets):
     graphs.append(simpleCycleGraph(centers))
 
     G = nx.compose_all(graphs)
+    ut.normalizeGraph(G)
 
     return G
 
@@ -83,6 +86,7 @@ def superStar(k, m, highSubsets, direction=ut.Direction.OUTGOING):
     graphs.append(simpleStar(nodes, last, direction=direction))
 
     G = nx.compose_all(graphs)
+    ut.normalizeGraph(G)
 
     return G
 
@@ -106,10 +110,11 @@ def superStars(k, m, highSubsets, kernelsSubsets):
         graphs.append(simpleCycleGraph(kernels))
 
     G = nx.compose_all(graphs)
+    ut.normalizeGraph(G)
 
     return G
 
-choice = 1
+choice = 6
 
 ### Simple test for one star
 if choice == 0:
@@ -118,14 +123,12 @@ if choice == 0:
     nodes = np.array([i for i in range(n)])
 
     G = simpleStar(nodes, center, direction=ut.Direction.OUTGOING)
-    M = nx.to_numpy_matrix(G)
-    M /= M.sum()
 
-    dr.printInput(M)
-    res = sp.sparseToBND(M)
+    dr.printInput(G)
+    res = sp.sparseToBND(G)
     N, layers = res[0], res[1]
 
-    dr.printRes(M, N, None, layers)
+    dr.printRes(G, N, None, layers)
 
 ### Simple test for several stars ###
 elif choice == 1:
@@ -135,18 +138,14 @@ elif choice == 1:
     highSubsets = np.array([0,0,0,0,0,0,0,0])
     G = severalStarGraphs(m, k, highSubsets)
 
-    M = nx.to_numpy_matrix(G)
-    M /= M.sum()
-
-    dr.printInput(M)
-    res = sp.sparseToBND(M, debug=True)
+    dr.printInput(G)
+    res = sp.sparseToBND(G, debug=True)
     N, layers = res[0], res[1]
-    G = nx.from_numpy_matrix(N)
 
-    dr.printRes(M, N, None, layers)
+    dr.printRes(G, N, None, layers)
 
-    if not nx.is_connected(G):
-        subgraphs = list(nx.connected_component_subgraphs(G))
+    if not nx.is_connected(N):
+        subgraphs = list(nx.connected_component_subgraphs(N))
         for H in subgraphs:
             nx.draw_networkx(H)
             plt.show()
@@ -170,22 +169,18 @@ elif choice == 2:
 
         G = severalStarGraphs(m, k, highSubsets)
 
-        M = nx.to_numpy_matrix(G)
-        M /= M.sum()
-
-        res = sp.sparseToBND(M)
+        res = sp.sparseToBND(G)
         N, layers = res[0], res[1]
-        G = nx.from_numpy_matrix(N)
 
-        if not nx.is_connected(G):
-            subgraphs = list(nx.connected_component_subgraphs(G))
+        if not nx.is_connected(N):
+            subgraphs = list(nx.connected_component_subgraphs(N))
             for H in subgraphs:
                 nx.draw_networkx(H)
                 plt.show()
             raise NameError('The result graph is not connected')
 
-        EPL = ev.getEPL(M, G)
-        _max = ev.getMaxDegree(G)
+        EPL = ev.getEPL(G, N)
+        _max = ev.getMaxDegree(N)
         results.append([i, EPL, _max])
 
         if index[0] > checkpoint[0]:
@@ -223,14 +218,12 @@ elif choice == 3:
     highSubsets = np.array([0,1,0,1,0,1,0,1,0,1])
 
     G = superStar(k, m, highSubsets)
-    M = nx.to_numpy_matrix(G)
-    M /= M.sum()
 
-    dr.printInput(M)
-    res = sp.sparseToBND(M, debug=False)
+    dr.printInput(G)
+    res = sp.sparseToBND(G, debug=False)
     N, layers = res[0], res[1]
 
-    dr.printRes(M, N, None, layers)
+    dr.printRes(G, N, None, layers)
 
 ### All permutations of superstars (k, m)
 elif choice == 4:
@@ -250,22 +243,18 @@ elif choice == 4:
 
         G = superStar(k, m, highSubsets)
 
-        M = nx.to_numpy_matrix(G)
-        M /= M.sum()
-
-        res = sp.sparseToBND(M)
+        res = sp.sparseToBND(G)
         N, layers = res[0], res[1]
-        G = nx.from_numpy_matrix(N)
 
-        if not nx.is_connected(G):
-            subgraphs = list(nx.connected_component_subgraphs(G))
+        if not nx.is_connected(N):
+            subgraphs = list(nx.connected_component_subgraphs(N))
             for H in subgraphs:
                 nx.draw_networkx(H)
                 plt.show()
             raise NameError('The result graph is not connected')
 
-        EPL = ev.getEPL(M, G)
-        _max = ev.getMaxDegree(G)
+        EPL = ev.getEPL(G, N)
+        _max = ev.getMaxDegree(N)
         results.append([i, EPL, _max])
 
         if index[0] > checkpoint[0]:
@@ -304,14 +293,12 @@ elif choice == 5:
     kernelSubsets = np.array([1,0])
 
     G = superStars(k, m, highSubsets, kernelSubsets)
-    M = nx.to_numpy_matrix(G)
-    M /= M.sum()
 
-    dr.printInput(M)
-    res = sp.sparseToBND(M, debug=False)
+    dr.printInput(G)
+    res = sp.sparseToBND(G, debug=False)
     N, layers = res[0], res[1]
 
-    dr.printRes(M, N, None, layers)
+    dr.printRes(G, N, None, layers)
 
     ### All permutations of couple superstars (k, m)
 elif choice == 6:
@@ -332,22 +319,18 @@ elif choice == 6:
 
         G = superStars(k, m, highSubsets, kernelSubsets)
 
-        M = nx.to_numpy_matrix(G)
-        M /= M.sum()
-
-        res = sp.sparseToBND(M)
+        res = sp.sparseToBND(G)
         N, layers = res[0], res[1]
-        G = nx.from_numpy_matrix(N)
 
-        if not nx.is_connected(G):
-            subgraphs = list(nx.connected_component_subgraphs(G))
+        if not nx.is_connected(N):
+            subgraphs = list(nx.connected_component_subgraphs(N))
             for H in subgraphs:
                 nx.draw_networkx(H)
                 plt.show()
             raise NameError('The result graph is not connected')
 
-        EPL = ev.getEPL(M, G)
-        _max = ev.getMaxDegree(G)
+        EPL = ev.getEPL(G, N)
+        _max = ev.getMaxDegree(N)
         results.append([i, EPL, _max])
 
         if index[0] > checkpoint[0]:

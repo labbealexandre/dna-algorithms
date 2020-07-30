@@ -17,58 +17,56 @@ Maciek: Intro to the algorithm, comparison with DISC algorithm.
 \subsection{Algorithm}
 
 
-The algorithm arbitrarily assigns a node to \emph{assist} each edge in the demand graph.
-While doing so, it ensures that each node assists at most $\beta = \lceil\Delta_{avg}/2\rceil$ edges.
+The algorithm arbitrarily assigns a node to \emph{help} each edge in the demand graph.
+While doing so, it ensures that each node helps at most $\beta = \lceil\Delta_{avg}/2\rceil$ edges.
 
 
-To construct the network, we first construct an \emph{assistant graph} $G'$ that is initially equal to the demand distribution graph $G_D$.
+To construct the network, we first construct an \emph{auxiliary graph} $G'$ that is initially equal to the demand distribution graph $G_D$.
 Then, we construct the network $N$ from $G'$.
 
-Now we construct the assistant graph $G'$ based upon the assistant nodes assignment.
-If the algorithm assigns $k \neq i,j$ to help the edge $(i, j)$, we replace the edge $(i, j)$ in $G'$ with 
+Now we construct the auxiliary graph $G'$ based upon the helper nodes assignment.
+If the helping node $k$ is chosen as either $i$ or $j$, then do not modify any edges of $G'$.
+Otherwise, if the algorithm helps $k \neq i,j$ to help the edge $(i, j)$, we replace the edge $(i, j)$ in $G'$ with 
 2-hop paths through $k$:
 $$ p(i,j) = 0$$
 $$ p(i,k) = p(i,k) + p(i,j)$$
 $$ p(k,j) = p(k,j) + p(i,j)$$
 We say that the edges $(i,k)$ and $(k,j)$ added to (and from) intermediate nodes are \emph{intermediate edges}.
-If the assisting node $k$ is chosen as either $i$ or $j$, then we leave the graph $G'$ unchanged.
 
-Next, we construct the network $N$ based upon the assistant graph $G'$.
+Next, we construct the network $N$ based upon the auxiliary graph $G'$.
 We start with an empty network $N$.
 In $G'$, a node $i$ has two types of new neighbors: 
-the set $G_i$ of intermediate nodes that replaced an initial edges of $i$, and the set $H_i$ of nodes in whose edges $i$ is assisting.
+the set $G_i$ of intermediate nodes that replaced an initial edges of $i$, and the set $H_i$ of nodes in whose edges $i$ is helping.
 Among $G_i$ we distinguish the set $G_i^-$ (resp. $G_i^+$) of nodes that are connected with $i$ with an ingoing (resp. outgoing) edges.
 For each node $i$, the algorithm constructs two Mehlhorn trees in $N$, one for $G_i^-$ and another for $G_i^+$, and connects its roots to $i$.
-(reference to the Table + Figure of i,j and helper k)
+(reference to Figure of i,j and helper k)
 
-Note that we skip the set $H_i$ while building the Mehlhorn trees.
-However, the connection (possibly indirect) between $i$ and a node $j \in H_i$ will appear while building the Mehlhorn tree of $j$.
+Note that we skip the set $H_i$ while building the Mehlhorn trees of neighbors of $i$.
+However, the connection (possibly indirect) between $i$ and a node $j \in H_i$ appears while building the Mehlhorn tree of $j$.
 
 \medskip
 
-Now we claim that the algorithm has a sufficient number of nodes available as assistants
- (i.e., the total number of available assistants $n \cdot \beta$ is sufficient to help all $m$ edges).
+Now we claim that the algorithm has a sufficient number of nodes available as helpers 
+ (i.e., the total number of available helpers $n \cdot \beta$ is sufficient to help all $m$ edges).
 
   $$n \cdot \beta = \frac{n\Delta_{avg}}{2} = m$$
 
 and we conclude that the algorithm is well-defined.
 
 \medskip
-
+\newpage
 Now, we upper-bound the maximal final degree of the nodes.
-%The degree of each node may increase beyond its initial degree because it helps other nodes, and, more importantly, because it may participate in Mehlhorn trees of its neighbors.
-A node $i$ is not involved in the Mehlhorn trees of the intermediate nodes
-that replaced a node between $i$ and another node.
-Furthermore, these new connections with intermediate nodes are contained in 2 Mehlhorn trees
-whose root is $i$. Additionally $i$ is involved in one Mehlhorn tree
+A node $i$ is involved in one Mehlhorn tree
 for each node it helped, in total at most $2\beta$ trees.
+Furthermore, the node $i$ is connected with one edge to Mehlhorn trees $G_i^+$ and $G_i^-$.
+Note that the node $i$ is not involved in the Mehlhorn trees of the intermediate nodes
+that replaced a node between $i$ and another node.
+%The degree of each node may increase beyond its initial degree because it helps other nodes, and, more importantly, because it may participate in Mehlhorn trees of its neighbors.
+A~participation in each Mehlhorn tree adds at most $3$ edges to a node, thus its final degree $\gamma_i$ is
 
-Let $\gamma_i$ be the final degree of the node $i$.
-A participation in each Mehlhorn tree adds at most $3$ edges to a node, thus
-
-$$\gamma_i \leq 2 + 6\beta \leq 2 + 6 \times \left(\frac{\Delta_{avg}}{2}+1\right) = 8 + 3\Delta_{avg},$$
-
-Thus, the algorithm produces a network
+$$\gamma_i \leq 6\beta + 2 \leq 6 \left(\frac{\Delta_{avg}}{2}+1\right) + 2 =  3\Delta_{avg} + 8.$$
+%
+We conclude that the algorithm produces a network
 with maximum degree of $3\Delta_{avg} + 8$.
 
 Remarks.
@@ -138,15 +136,36 @@ However, the analysis holds for arbitrary assignments.
 \caption{Running the algorithm on a simple example}
 \end{figure}
 
-In this example, $\Delta_{avg} = 1$ thus the limit of assistances
-for each node is $\lceil\Delta_{avg}/2\rceil = 1$. The edges $(2,1)$
-and $(4,2)$ are respectively assisted by the nodes $3$ and $1$.
+In this example, $\Delta_{avg} = 1$ thus the limit of the number of times a node can help
+is $\lceil\Delta_{avg}/2\rceil = 1$. 
+Nodes $1$ and $3$ help the edges $(4,2)$ and $(2,1)$, respectively.
 For each node $i$, a Mehlhorn tree is built on the set of nodes that
-assisted an edge connected to $i$.
+helped an edge connected to $i$.
 The initial degree of $3$ is $0$, thus there is no Mehlhorn tree from it.
-Next, $1$ and $4$ were both connected to one edge, and are respectively
-assisted by $3$ and $1$. The built Melhorn trees are simple edges.
+The nodes $1$ and $3$ help the only edge of $4$ and $1$, respectively.
+The built Mehlhorn trees are simple edges.
 Finally, $2$ is connected to an outgoing and an ingoing edge, thus two
 Mehlhorn trees including the nodes $1$ and $3$, will be built from $2$.
+
+
+Now we claim that EPL are within the constant in comparison to optimum.
+This is a consequence of near-optimality of Mehlhorn trees.
+
+\section{Dealing with congestion}
+
+Above algorithm has asymptotically optimal congestion.
+The lower bound from INFOCOM paper, let's say it's $c$ on the most loaded edge of EgoTree.
+Then, our most congested edge is the one connecting the root to the Mehlhorn tree, and it has congestion $c \cdot \Delta_{avg}$.
+
+Introduce p-EgoTree and the new way of constructing them (instead of solving the scheduling, we simulate solving it, and then pack some trees together).
+Show its properties: it approximates congestion.
+
+Now we show how to trade the congestion to the increased $\Delta_{max}$.
+Using $p$-EgoTrees gives us the $\Delta_{max} = 3\cdot \Delta_{avg} + 6 ) 2 \cdot p \cdot \Delta_{avg}$.
+The congestion is then $4/3$ of LPTF, multiplied by $\Delta_{max} / (p \cdot \Delta_{avg})$.
+The final congestion bound is due to the number of times the node can help, $\beta_i$.
+
+
+
 
 \end{document}

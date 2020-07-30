@@ -33,7 +33,7 @@ def randomGraph2(inDegrees, outDegrees):
 
 n = 100
 m = 500
-N = 1000
+N = 10
 
 inDegrees = [7 for i in range(75)] + [99 for i in range(25)]
 outDegrees = [7 for i in range(60)] + [99 for i in range(25)] + [7 for i in range(15)]

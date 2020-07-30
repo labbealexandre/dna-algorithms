@@ -25,11 +25,16 @@ def highlands(n, m):
 
     return G
 
-choice = 0
+print('You can run the sparse graph algorithm on the following sets')
+print('(1) one single highland graph')
+print('(2) all highlands graphs with a given number of nodes')
+choice = int(input('Your choice: '))
 
 ### Simple Test ###
-if choice == 0:
-    n, m = 9, 3
+if choice == 1:
+    n = int(input('How many nodes ? '))
+    m = int(input('Degree of the highland nodes ? '))
+    print(n, m)
     G = highlands(n, m)
 
     dr.printInput(G)
@@ -39,8 +44,8 @@ if choice == 0:
     dr.printRes(G, N, None)
 
 ### All tests ###
-elif choice == 1:
-    n = 10
+elif choice == 2:
+    n = int(input('How many nodes ? '))
     EPLs = np.zeros(n)
     maxs = np.zeros(n)
 
@@ -56,7 +61,7 @@ elif choice == 1:
         print("m = " + str(_m) + ", EPL = " + str(EPL) + ", max degree = " + str(_max))
 
     headers = ['Highlands number', 'EPL', 'max degree']
-    file = str(n) + '_nodes.csv'
+    file = 'results/' + input('Enter the name of the csv file : ')
     results = []
     for m in range(n):
         line = [str(m+1), str(EPLs[m]), str(maxs[m])]

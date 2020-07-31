@@ -9,6 +9,8 @@ def melhornTree(children, root, N, direction=ut.Direction.OUTGOING, layer=None):
     total = sum(children[:, 1])
     m, _ = children.shape
 
+    if m == 0: return
+
     # Mehlhorn method to find nearly optimal binary search trees
     # We search for a node which divides the tree
     # in two approximately equal sub-trees

@@ -4,7 +4,6 @@ from src import chrono as ch
 from src import draw as dr
 import numpy as np
 import networkx as nx
-from time import time
 
 def chooseHelpingNode(helpingList, lowDegrees, src, dst, M, way=0):
     if way == 0:
@@ -127,15 +126,37 @@ def getSortedNodes(degrees, n, auxG):
 
     highDegrees = np.array(highDegrees)
 
-    outDegrees = np.array(auxG.out_degree(highDegrees[:,0]))
-    aux = outDegrees[:,1]
-    mask = aux >= 2*avgDegrees
-    highOutDegrees = outDegrees[mask]
+    tmp = auxG.out_degree(highDegrees[:,0])
+    if len(tmp) == 0:
+        outDegrees = np.array([])
+    elif len(tmp) == 1:
+        tmp = list(tmp)
+        outDegrees = np.array([[tmp[0][0], tmp[0][1]]])
+    else:
+        outDegrees = np.array(auxG.out_degree(highDegrees[:,0]))
 
-    inDegrees = np.array(auxG.in_degree(highDegrees[:,0]))
-    aux = inDegrees[:,1]
-    mask = aux >= 2*avgDegrees
-    highInDegrees = inDegrees[mask]
+    if len(outDegrees > 0):
+        aux = outDegrees[:,1]
+        mask = aux >= 2*avgDegrees
+        highOutDegrees = outDegrees[mask]
+    else:
+        highOutDegrees = np.array([])
+
+    tmp = auxG.in_degree(highDegrees[:,0])
+    if len(tmp) == 0:
+        inDegrees = np.array([])
+    elif len(tmp) == 1:
+        tmp = list(tmp)
+        inDegrees = np.array([[tmp[0][0], tmp[0][1]]])
+    else:
+        inDegrees = np.array(auxG.in_degree(highDegrees[:,0]))
+
+    if len(inDegrees > 0):
+        aux = inDegrees[:,1]
+        mask = aux >= 2*avgDegrees
+        highInDegrees = inDegrees[mask]
+    else:
+        highInDegrees = np.array([])
 
     return [lowDegrees, highOutDegrees, highInDegrees]
 
@@ -215,17 +236,18 @@ def addBinarytrees(_M, N, highOutDegrees, highInDegrees):
 
     return [layers, trees]
 
-def sparseToBND(M, debug=False):
+def sparseToBND(G, debug=False):
 
     """
     Theorem 4 : get a Bounded Network Design from
     a request distribution such as the graph is sparse
     """
 
-    n = len(M)
+    n = len(G)
 
     # N will be the result unweighted graph
     N = np.zeros((n, n))
+    M = nx.to_numpy_matrix(G)
     auxM = np.ceil(M)
 
     auxG = nx.from_numpy_matrix(auxM, create_using=nx.MultiDiGraph())
@@ -240,7 +262,7 @@ def sparseToBND(M, debug=False):
 
     # Create a copy of a M, which will represents the G' distribution
     _M = np.copy(M)
-    if debug: dr.printInput(_M)
+    if debug: dr.printInput(G)
 
     # Find edges from high-out to high-in-degree nodes
     # And remove it thanks to an helping node wisely chosen
@@ -261,4 +283,6 @@ def sparseToBND(M, debug=False):
         for tree in trees:
             print(tree)
 
-    return [N, layers]
+    resG = nx.from_numpy_matrix(N)
+
+    return [resG, layers]

@@ -31,6 +31,8 @@ def buildTrees(M, reverseM, root, parent, visited, N, direction):
     # In order to keep in mind the indexes
     # we change the array into an array of two figures [[index, value], ...]
     children = ut.arrayToDictArray(children)
+    rows = children[:,1]
+    children = children[np.where(rows > 0)]
     ml.melhornTree(children, root, N, direction)
 
     for i in range(n):
@@ -61,4 +63,6 @@ def treeToBND(M):
     root = 0
     buildTrees(M, reverseM, root, -1, visited, N, ut.Direction.INCOMING)
 
-    return N
+    resG = nx.from_numpy_matrix(N)
+
+    return resG

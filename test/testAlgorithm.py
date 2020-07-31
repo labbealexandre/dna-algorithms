@@ -1,10 +1,12 @@
 import unittest
 import importlib
 import numpy as np
+import networkx as nx
 
 from src import treeToBND as tr
 from src import sparseToBND as sp
 from src import draw as dr
+from src import utils as ut
 
 class TestTreeToBND(unittest.TestCase):
 
@@ -23,36 +25,30 @@ class TestTreeToBND(unittest.TestCase):
             [0, 0, 0, 0, 0, 0, 0, 0, 0]
         ])
 
-        # expected = np.array([
-        #     [0, 0, 0, 0, 0, 0, 0, 0, 0],
-        #     [1, 0, 0, 0, 0, 0, 0, 0, 0],
-        #     [0, 0, 0, 1, 0, 0, 0, 0, 0],
-        #     [0, 1, 0, 0, 0, 0, 0, 0, 0],
-        #     [0, 0, 0, 1, 0, 0, 0, 0, 0],
-        #     [0, 0, 0, 0, 1, 0, 0, 1, 0],
-        #     [0, 0, 0, 0, 0, 0, 0, 0, 0],
-        #     [0, 0, 0, 0, 0, 0, 1, 0, 1],
-        #     [0, 0, 0, 0, 0, 0, 0, 0, 0],
-        # ])
-
-        # expected = np.array([
-        #     [0, 0, 0, 0, 0, 0, 0, 0, 0],
-        #     [0, 0, 0, 0, 0, 0, 0, 0, 0],
-        #     [0, 0, 0, 0, 1, 0, 0, 0, 0],
-        #     [0, 0, 1, 0, 0, 0, 0, 0, 0],
-        #     [1, 0, 0, 0, 0, 0, 0, 0, 0],
-        #     [0, 0, 0, 0, 0, 0, 0, 0, 1],
-        #     [0, 0, 0, 0, 0, 0, 0, 0, 0],
-        #     [0, 0, 0, 0, 0, 0, 1, 0, 0],
-        #     [0, 0, 0, 0, 0, 0, 0, 1, 0],
-        # ])
+        expected = np.array([
+            [0, 0, 0, 0, 1, 0, 0, 0, 0],
+            [0, 0, 0, 0, 1, 0, 0, 0, 0],
+            [0, 0, 0, 1, 1, 0, 0, 0, 0],
+            [0, 0, 1, 0, 0, 0, 0, 0, 0],
+            [1, 1, 1, 0, 0, 1, 0, 0, 0],
+            [0, 0, 0, 0, 1, 0, 0, 1, 0],
+            [0, 0, 0, 0, 0, 0, 0, 1, 0],
+            [0, 0, 0, 0, 0, 1, 1, 0, 1],
+            [0, 0, 0, 0, 0, 0, 0, 1, 0],
+        ])
         
-        # res = tr.treeToBND(M)
-        # print('res', res)
-        # print('exp', expected)
-        # np.testing.assert_array_equal(expected, res)
-        # dr.printInput(M)
-        # dr.printRes(M, res, expected)
+        G = nx.from_numpy_matrix(M, create_using=nx.DiGraph)
+        ut.normalizeGraph(G)
+
+        expectedG = nx.from_numpy_matrix(expected)
+        ut.normalizeGraph(G)
+
+        resG = tr.treeToBND(M)
+        N = nx.to_numpy_matrix(resG)
+        np.testing.assert_array_equal(expected, N)
+
+        dr.printInput(G)
+        dr.printRes(G, resG, expectedG)
 
 class TestSparseToBND(unittest.TestCase):
 
@@ -71,20 +67,28 @@ class TestSparseToBND(unittest.TestCase):
         ])
 
         expected = np.array([
-            [0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 1, 0, 0, 1, 0, 0],
-            [1, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 1, 0, 0, 0, 0, 0],
+            [0, 0, 1, 0, 0, 1, 0, 1],
+            [1, 1, 0, 1, 0, 0, 0, 0],
             [0, 0, 1, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 1],
-            [0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 1, 0, 0, 0, 0, 1, 0],
+            [0, 1, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 1],
+            [0, 1, 0, 0, 1, 0, 1, 0],
         ])
 
-        dr.printInput(M)
-        res = sp.sparseToBND(M)
-        N, layers = res[0], res[1]
-        dr.printRes(M, N, expected, layers)
+        G = nx.from_numpy_matrix(M, create_using=nx.DiGraph)
+        ut.normalizeGraph(G)
+
+        expectedG = nx.from_numpy_matrix(expected)
+        ut.normalizeGraph(G)
+
+        res = sp.sparseToBND(G)
+        resG, layers = res[0], res[1]
+        N = nx.to_numpy_matrix(resG)
+
+        dr.printInput(G)
+        dr.printRes(G, resG, expectedG, layers)
         np.testing.assert_array_equal(expected, N)
         
 

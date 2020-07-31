@@ -1,0 +1,237 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+
+\begin{document}
+
+\section{Sparse graph - bound degree : $12\Delta_{avg}$ to $6\Delta_{avg}$}
+
+\subsection{Bound degree of the low degree nodes}
+
+For each low degree node i, let's denote :
+\begin{itemize}
+    \item $\alpha_i$ its degree
+    \item $\beta_i$ the number of edges this low degree node can help
+    \item $\gamma_i$ its final degree
+\end{itemize}
+The following condition holds: $$\gamma_i \leq 3(2\beta_i + \alpha_i)$$
+
+We have to choose $\beta_i$, ie how many edges each low degree node
+can help. Let note B the number of edges we have to help.
+So we have to choose $\beta_i$ in order to have $$B \leq \sum_{i} \beta_i$$
+
+\subsubsection{In the paper, we chose $\beta_i$ = $\Delta_{avg}$}
+
+So $$\sum_{i} \beta_i = \frac{n*\Delta_{avg}}{2} = m \geq B$$
+And we have $\gamma_i \leq 12\Delta_{avg}$ because $\alpha_i \leq 2\Delta_{avg}$
+
+\subsubsection{But we can choose a smaller value : $\beta_i$ = $\Delta_{avg}$ - $\frac{\alpha_i}{2}$}
+
+Let note A the number of edges in which a low degree node is involved.
+We have $$A \leq \sum_{i} \alpha_i \leq 2A$$
+So $$\sum_{i} \beta_i = \frac{n*\Delta_{avg}}{2} - \frac{1}{2}\sum_{i} \alpha_i \geq m - A$$
+But we can also say that $ A + B \leq m$ because A corresponds to edges
+into at least one low degree node is involved and B corresponds to edges
+into none is involved. So we have $$\sum_{i} \beta_i \geq B$$
+And we have too
+$$\gamma_i \leq 3(2*\Delta_{avg}-2*\frac{\alpha_i}{2}+\alpha_i) = 6\Delta_{avg}$$
+
+\subsection{Bound degree of the high degree nodes which are neither high-in nor high-out degree}
+
+Let's call strict High degree node an high degree node which is neither
+high-in nor high-out degree. According to the paper, they keep their
+degree from the initial distribution, which is at most $4\Delta_{avg}$.
+But these neighbours can be high-out or high-in degree nodes.*
+So we can imagine a case even worst where a strict high degree node
+is involved into $4\Delta_{avg}$ Melhorn trees which makes its
+final degree at $12\Delta_{avg}$.\\
+
+So let's do a second modification to keep this bounded degree of $6\Delta_{avg}$.
+Originally we changed edges only from High-out degree nodes
+to High-in degree nodes. we can extend the rule that way :
+We now change all edges between high degree nodes.\\
+
+The final degree of a strict high degree node is at most $4\Delta_{avg}$.
+Because it is not connected to any high-in or high-out degree nodes.
+By doing so there are more edges to replace.
+But still we have $ A + B <= m$
+because the edges to replace are between High degree nodes.\\
+% Also this doesn't change the final degree of high-in or
+% high-out degree nodes which is at most $6\Delta_{avg} + 1$.
+
+It also diminishes a lot the max degree of High out(in) degree nodes.
+Because that way it will not be in any melhorn tree.
+If the node is both high out and high in degree, it's final degree will
+be 2. Otherwise it will be inferior to $1+2\Delta_{avg}$.
+
+\newpage
+\section{Sparse graph : try to get a constant bound}
+
+\subsection{Introduce a new parameter $c$ to have $\beta_i=c-\frac{\alpha_i}{2}$}
+
+The idea is to classify the degrees in another way and then to do a
+quite same reasoning. Let's note $C$ the constant degree we wish to
+obtain as a degree bound. We note: $c = \frac{C}{6}$ and $n_l = \frac{m}{c}$.
+$n_l$ corresponds to the number of low degrees. In the previous version
+we had chosen $n_l = \frac{m}{\Delta_{avg}} = \frac{m}{\frac{2m}{n}} = \frac{n}{2}$
+which is the half.\\
+
+The other nodes are high degree nodes and we also change the definition
+of high-out(in) degree nodes. These are the nodes with out(in)
+degree $> 2c$.\\
+
+Let's do the first step, we replace all the edges between high degree nodes.
+There are B edges to replace.We now decide to choose $\beta_i$
+that way: $$\beta_i = c - \frac{\alpha_i}{2}$$
+Before thanks to pigeon holes principle we were sure that $\beta_i$
+was positive. But now we have not this guarantee. To be sure that
+$\beta_i$ will always be positive we need to study the worst case.\\
+
+Let's sort the degrees. [i, ..., nl] are the low degree nodes and
+[nl+1, ..., n] are the high ones. We take a look at the total degree:
+$$n\Delta_{avg} = \sum_{i < nl} \alpha_i + \alpha_{nl} + \sum_{i > nl} \alpha_i$$
+$$n\Delta_{avg} >= \alpha_{nl} + \sum_{i > nl} \alpha_i$$
+and if $i > nl$ then $\alpha_i > \alpha_nl$ because the nodes are sorted. So
+$$n\Delta_{avg} >= \alpha_{nl}(n-nl+1)$$
+$$\alpha_{nl} <= \frac{n\Delta_{avg}}{n-nl+1} <= \frac{n\Delta_{avg}}{n-nl}$$
+And all the low degree nodes have this bound.
+Let's find a condition on c to have $\beta_i >= 0$:
+$$c - \frac{n\Delta_{avg}}{2(n-nl)} >= 0$$
+$$2(n-\frac{m}{c})*c >= n\Delta_{avg}$$
+$$c >= \frac{n\Delta_{avg}+2m}{2n}$$
+$$c >= \frac{2m}{n} = \Delta_{avg}$$
+So we didn't found a better bound than previously...
+We could do the same reasoning but we would have a bound of $6c > 6\Delta_{avg}$.
+
+\subsection{Introduce a second parameter $d$ to have $\beta_i=c-\frac{\alpha_i}{d}$}
+
+Let's find a sufficient condition on d to have $\sum_{i} \beta_i >= B$
+$$\sum_{i} \beta_i = m - \frac{1}{d}\sum_{i} \alpha_i$$
+So $d >= 2$ is sufficient because we still have $\sum_{i} \alpha_i <= 2A$.\\
+
+Now we also need sufficient conditions on d and c to have $\beta_i >= 0$
+Let's note $k = \frac{n_l}{n}$ which is the fraction of low degree nodes.
+We have $$c = \frac{\Delta_{avg}}{2k}$$
+and $$\alpha_i <= \frac{n\Delta_{avg}}{n-n_l} = \frac{\Delta_{avg}}{1-k}$$
+So $$\beta_i >= c - \frac{\Delta_{avg}}{d(1-k)}$$
+
+So by writing equivalent inequalities :
+$$c - \frac{\Delta_{avg}}{d(1-k)} >= 0$$
+$$\frac{\Delta_{avg}}{2k} >= \frac{\Delta_{avg}}{d(1-k)}$$
+$$2k <= d(1-k)$$
+$$d >= \frac{2k}{1-k}$$
+So this is a sufficient condition to have $\beta_i >= 0$\\
+
+Now let's calculate the bound on low degree node :
+$$\gamma_i <= 3(2\beta_i+\alpha_i)$$
+$$\gamma_i <= 3(2c - 2\frac{\alpha_i}{d} + \alpha_i)$$
+$$\gamma_i <= \frac{3\Delta_{avg}}{k} + 3\alpha_i\frac{d-2}{d}$$
+And because $\alpha_i <= \frac{\Delta_{avg}}{1-k}$
+$$\gamma_i <= 3\Delta_{avg}\left(\frac{1}{k}+\frac{1-\frac{2}{d}}{1-k}\right)$$
+Let's note $$g(k,d) = \frac{1-\frac{2}{d}}{1-k}$$
+We need to find a solution of the following system:
+
+\begin{equation*}
+\begin{cases}
+  \frac{1}{k} + g(k,d) < 2\\
+  d >= \frac{2k}{1-k}
+\end{cases}
+\end{equation*}
+
+On one hand, because we have $d > 2$, we have $g(k, d) > 0$ So it means that we need
+to have $k > 0.5$ otherwise $\frac{1}{k} >= 2$.\\
+
+On the other hand, thanks to the first inequation we have :
+$$\frac{1-k}{2k} + \frac{1}{2} - \frac{1}{d} < 1-k$$
+And because of the second one we have 
+$$\frac{1-k}{2k} >= \frac{1}{d}$$
+So $$\frac{1}{d} + \frac{1}{2} - \frac{1}{d} < 1 - k$$
+Finaly $$k < 0.5$$
+
+So unfortunately, there is no solution. We need to cut in half.
+
+Then $$\gamma_i <= 12\Delta_{avg}\left(1-\frac{1}{d}\right)$$
+And if we want this bound to be lower than $6\Delta_{avg}$ then $d = 2$
+So it corresponds to the initial definition of $\beta_i$ 
+
+\newpage
+
+\section{Use of high degree nodes to help}
+
+\subsection{Presentation of the idea}
+
+Let's drop the definition of $\beta_i$ and consider the problem in another
+way. Recall that we have to help enough edges (B), and if we are able to help
+$m - \frac{1}{2}\sum_{i \in L}\alpha_i$ with L the set of low degree nodes,
+it is sufficient.\\
+
+Without helping edges, a low degree node will have a final degree lower
+than $\gamma_i <= 3*\alpha_i$. Let's try to optimize the bound of the
+total degree of low degree nodes M. we have a budget of
+$$M - \sum_{i \in L}3*\alpha_i$$
+degrees left.
+Helping an edge has a cost of 6 (at most 2 melhorn trees)
+So we can help $$\frac{M}{6} - \frac{1}{2}\sum_{i \in L}\alpha_i$$
+edges.
+So let's try to find M to have
+$$\frac{M}{6} - \frac{1}{2}\sum_{i \in L}\alpha_i = m - \frac{1}{2}\sum_{i \in L}\alpha_i$$
+It leads to
+$$M = 6m$$
+and so if we distribute the charge equally then the bound of a low degree node
+will be $$\gamma_i <= \frac{6m}{\frac{n}{2}} = 6\Delta_{avg}$$
+
+So we didn't manage to reduce the bound unfortunately. But we can add a
+new modification. The idea is to use some of the high degree nodes to help too. It enables
+us to increase our budget. Now we note M in order to have $\frac{M}{2}$
+to be the bound of the total degree of low degree nodes and also for high
+degree nodes. That's way M is the bound of the total degree.
+
+Our budget is now :
+$$M - 3\sum_{i \in L}\alpha_i - \sum_{i \in H}\alpha_i$$
+We have $\sum_{i \in H}\alpha_i <= 2m$
+So our budget is greater than
+$$M - 3\sum_{i \in L}\alpha_i -2m$$
+which enables us to help
+$$\frac{M}{6} - \frac{1}{2}\sum_{i \in L}\alpha_i - \frac{m}{3}$$
+edges. Again let's try to find the best M.
+$$\frac{M}{6} - \frac{1}{2}\sum_{i \in L}\alpha_i - \frac{m}{3} = m - \frac{1}{2}\sum_{i \in L}\alpha_i$$
+$$M = 8m$$
+And then by distributing equally the charge, we have a degree bound of
+$$\frac{M}{n} = \frac{4*2m}{n} = 4\Delta_{avg}$$
+
+\subsection{Detailed part - First try}
+
+Let's note S the sum of the final degrees on all the nodes
+$$S = \sum_{i}\gamma_i$$
+We want to find a bound on it.
+The final degree $\gamma_i$ of a node after the algorithm comes from two sources:
+
+\begin{enumerate}
+  \item its connexions to its initial neighours, which may increase
+  if this one is involved in melhorn trees. If the node is lower degree node, the contribution of the initial
+  neighbours in the final degree will be at most $3\alpha_i$, if it
+  is a high degree node it will be $\alpha_i$ because after the helping
+  node procedure, it will not be connected to high degree nodes which
+  may create melhorn trees. If we sum on the nodes these contributions
+  on the final degrees, we have a total cost due to initial neighbours
+  which is at most
+  $$C_I = 3\sum_{i \in L}\alpha_i + \sum_{i \in H}\alpha_i$$
+  \item the connexions between high degrees nodes it will reroute.
+  We chose in the algorithm to be able to remove
+  $m - \frac{1}{2}\sum_{i \in L}\alpha_i$ because it is enough to
+  remove all connexions between high degree nodes. So it means
+  that in the worst case - when for each help, it increases the degree
+  of the helper by 6 - we can have our total degree increased by
+  $$C_H = 6m - 3\sum_{i \in L}\alpha_i$$
+\end{enumerate}
+
+$C_I$ and $C_H$ are upper bounds because they correspond to the worst
+cases. So we have
+
+$$S <= C_I + C_H$$
+$$S <= \sum_{i \in H}\alpha_i + 6m$$
+But we know that $\sum_{i \in H}\alpha_i <= 2m$
+so $$S = \sum_{i}\gamma_i <= 8m$$
+And $$\frac{8m}{n} = 4\Delta_{avg}$$
+
+\end{document}

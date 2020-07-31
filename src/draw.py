@@ -24,44 +24,42 @@ def matrixToGraph(N, weighted):
     
     return G
 
-def printInput(M):
+def printInput(G):
 
-    n, _ = M.shape
+    n = len(G)
 
-    avgDegree = ev.getAverageDegree(M)
-    MG = nx.from_numpy_matrix(M, create_using=nx.DiGraph)
+    avgDegree = ev.getAverageDegree(G)
 
     MFig = plt.subplot(121, aspect='equal')
     MFig.set_title("Input Distribution (average degree = " + str(avgDegree) + ")")
-    pos = nx.spring_layout(MG)
+    pos = nx.spring_layout(G)
     if (n < 50):
-        nx.draw_networkx_nodes(MG, pos)
-        nx.draw_networkx_labels(MG, pos)
+        nx.draw_networkx_nodes(G, pos)
+        nx.draw_networkx_labels(G, pos)
     if (n < 5):
-        labels = nx.get_edge_attributes(MG, 'weight')
-        nx.draw_networkx_edge_labels(MG, pos, edge_labels=labels)
-    nx.draw_networkx_edges(MG, pos, arrowstyle='->', arrowsize=10)
+        labels = nx.get_edge_attributes(G, 'weight')
+        nx.draw_networkx_edge_labels(G, pos, edge_labels=labels)
+    nx.draw_networkx_edges(G, pos, arrowstyle='->', arrowsize=10)
     plt.plot()
 
-    n, _ = M.shape
     nodes = np.array([i for i in range(n)])
 
     OFig = plt.subplot(222)
     OFig.set_title("Outgoing nodes distribution")
-    outgoingDistribution = ev.getOutgoingDistribution(M)
+    outgoingDistribution = ev.getOutgoingDistribution(G)
     plt.plot(nodes, outgoingDistribution)
 
     IFig = plt.subplot(224)
     IFig.set_title("Incoming nodes distribution")
-    incomingDistribution = ev.getIncomingDistribution(M)
+    incomingDistribution = ev.getIncomingDistribution(G)
     plt.plot(nodes, incomingDistribution)
 
     plt.show()
 
-def printRes(M, res, expected, layers=[]):
+def printRes(G, resG, expectedG, layers=[]):
 
     fig = plt.figure()
-    n, _ = res.shape
+    n = len(G)
 
     ### Parameters
     if (n < 50):
@@ -71,15 +69,13 @@ def printRes(M, res, expected, layers=[]):
         withLabel = False
         nodeSize = 0
 
-    resG = nx.from_numpy_matrix(res)
-
-    if expected is None:
+    if expectedG is None:
         resFig = fig.add_subplot(111,aspect='equal')
     else:
         resFig = fig.add_subplot(121,aspect='equal')
 
     if nx.is_connected(resG):
-        resEPL = ev.getEPL(M, resG)
+        resEPL = ev.getEPL(G, resG)
         resMax = ev.getMaxDegree(resG)
         resFig.title.set_text("result (EPL = " + str(resEPL) + ", max degree = " + str(resMax) + ")")
 
@@ -93,16 +89,14 @@ def printRes(M, res, expected, layers=[]):
         elist = nx.to_edgelist(subG)
         nx.draw_networkx_edges(resG, pos, edgelist=elist, edge_color=(rd.random(), rd.random(), rd.random()), width=5*rd.random())
 
-    if expected is None:
+    if expectedG is None:
         resDegrees = ev.getDegrees(resG)
-        print(resDegrees)
+        print("final degrees : " + str(resDegrees))
     else:
-        expectedG = nx.from_numpy_matrix(expected)
-        expectedEPL = ev.getEPL(M, expectedG)
+        expectedEPL = ev.getEPL(G, expectedG)
         expectedFig = fig.add_subplot(122,aspect='equal')
         expectedFig.title.set_text("expected (EPL = " + str(expectedEPL) + ")")
         nx.draw_circular(expectedG, with_labels=withLabel, node_size=nodeSize)
     
-
     plt.plot()
     plt.show()

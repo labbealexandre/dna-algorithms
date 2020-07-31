@@ -3,3 +3,9 @@ __pycache__
 perso/
 results/
 perf/
+*.log
+*.fls
+*.aux
+*.fdb_latexmk
+*.pdf
+*.synctex.gz

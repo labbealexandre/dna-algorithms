@@ -1,8 +1,9 @@
 import numpy as np
 import networkx as nx
 
-from src import algorithms as al
+from src import sparseToBND as sp
 from src import draw as dr
+from src import utils as ut
 
 def triangular(n):
     """ graph construction : node i is connected to (0, ..., n-1) """
@@ -13,14 +14,14 @@ def triangular(n):
         for j in range(i):
             M[i, j] = 1
     
-    # Normalization
-    M /= M.sum()
-    return M
+    G = nx.from_numpy_matrix(M, create_using=nx.DiGraph)
+    ut.normalizeGraph(G)
+    return G
 
 n = 5
-M = triangular(n)
+G = triangular(n)
 
-dr.printInput(M)
-res = al.sparseToBND(M)
+dr.printInput(G)
+N, _ = sp.sparseToBND(G)
 
-dr.printRes(M, res, None)
+dr.printRes(G, N, None)

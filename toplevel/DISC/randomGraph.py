@@ -1,6 +1,7 @@
 import numpy as np
 import networkx as nx
 import matplotlib.pyplot as plt
+from tqdm import tqdm
 
 from src import sparseToBND as sp
 from src import draw as dr
@@ -21,6 +22,7 @@ def randomGraph(n):
     nodes = np.array(G.nodes)
     D = dict(zip(nodes, np.array([i for i in range(_n)])))
     G = nx.relabel_nodes(G, D)
+    ut.normalizeGraph(G)
 
     return G
 
@@ -30,54 +32,34 @@ choice = 1
 if choice == 0:
     n = 20 
     G = randomGraph(n)
-    M = nx.to_numpy_matrix(G)
-    M /= M.sum()
 
-    dr.printInput(M)
-    res = sp.sparseToBND(M)
+    dr.printInput(G)
+    res = sp.sparseToBND(G)
     N, layers = res[0], res[1]
 
-    dr.printRes(M, N, None, layers)
+    dr.printRes(G, N, None, layers)
 
 ### Several test on random graphs
 if choice == 1:
     N, n = 100000, 20
 
     results = []
-    index = 0
-    tot = N
-    step = tot / 100.
-    checkpointIndex = 1
-    checkpoint = step
 
     inputs = []
-    for i in range(N):
+    for i in tqdm(range(N)):
         G = randomGraph(n)
         edges = str(G.edges)
-        M = nx.to_numpy_matrix(G)
-        avgDegree = ev.getAverageDegree(M)
-        M /= M.sum()
-        n, _ = M.shape
+        avgDegree = ev.getAverageDegree(G)
+        n = len(G)
 
-        res = sp.sparseToBND(M)
+        res = sp.sparseToBND(G)
         N, layers = res[0], res[1]
-        G = nx.from_numpy_matrix(N)
 
-        if nx.is_connected(G):
-            EPL = ev.getEPL(M, G)
-            _max = ev.getMaxDegree(G)
+        if nx.is_connected(N):
+            EPL = ev.getEPL(G, N)
+            _max = ev.getMaxDegree(N)
             results.append([EPL, _max, 12*avgDegree, edges])
 
-        if index > checkpoint:
-            print(str(checkpointIndex) + '%')
-            checkpointIndex += 1
-            checkpoint += step
-
-        index+=1
-
     headers = ['EPL', 'max degree', 'theorical max degree', 'edges']
-    file = 'random_graphs.csv'
+    file = 'results/' + 'random_graphs.csv'
     ex.exportToCSV(file, headers, results)
-
-
-

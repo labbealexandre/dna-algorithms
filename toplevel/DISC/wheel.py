@@ -4,6 +4,7 @@ import math
 import matplotlib.pyplot as plt
 import random as rd
 import copy
+from tqdm import tqdm
 
 from src import sparseToBND as sp
 from src import draw as dr
@@ -38,6 +39,7 @@ def simpleWheel(subset, center, direction=ut.Direction.OUTGOING):
         raise NameError(str(direction) + ' is not a valid value for direction')
 
     G = nx.relabel_nodes(G, D)
+    ut.normalizeGraph(G)
     return G
 
 def severalWheels(subset, highOutSubsets, highInSubsets):
@@ -52,9 +54,10 @@ def severalWheels(subset, highOutSubsets, highInSubsets):
         graphs.append(simpleWheel(subset, highInNode, direction=ut.Direction.INCOMING))
 
     G = nx.compose_all(graphs)
+    ut.normalizeGraph(G)
     return G
 
-choice = 1
+choice = 4
 
 ### Simple Test for one wheel ###
 if choice == 0:
@@ -63,13 +66,11 @@ if choice == 0:
     nodes = np.array([i for i in range(n)])
 
     G = simpleWheel(nodes, center, direction=ut.Direction.OUTGOING)
-    M = nx.to_numpy_matrix(G)
-    M /= M.sum()
 
-    dr.printInput(M)
-    res = sp.sparseToBND(M)
+    dr.printInput(G)
+    res = sp.sparseToBND(G)
 
-    dr.printRes(M, res[0], None, res[1])
+    dr.printRes(G, res[0], None, res[1])
 
 ### Simple Test for several wheels ###
 elif choice == 1:
@@ -79,14 +80,12 @@ elif choice == 1:
     highInSubsets = [5]
 
     G = severalWheels(nodes, highOutSubsets, highInSubsets)
-    M = nx.to_numpy_matrix(G)
-    M /= M.sum()
 
-    dr.printInput(M)
-    res = sp.sparseToBND(M)
+    dr.printInput(G)
+    res = sp.sparseToBND(G)
     N, layers = res[0], res[1]
 
-    dr.printRes(M, N, None, layers)
+    dr.printRes(G, N, None, layers)
 
 ### All tests for one wheel ###
 elif choice == 2:
@@ -99,20 +98,17 @@ elif choice == 2:
         nodes = np.array([i for i in range(m)])
 
         G = simpleWheel(nodes, center, direction=ut.Direction.OUTGOING)
-        M = nx.to_numpy_matrix(G)
-        M /= M.sum()
 
-        res = sp.sparseToBND(M)
+        res = sp.sparseToBND(G)
         N, layers = res[0], res[1]
-        G = nx.from_numpy_matrix(N)
-        EPL = ev.getEPL(M, G)
-        _max = ev.getMaxDegree(G)
+        EPL = ev.getEPL(G, N)
+        _max = ev.getMaxDegree(N)
         EPLs[m] = EPL
         maxs[m] = _max
         print("n = " + str(m) + " EPL = " + str(EPL) + ", max degree = " + str(_max))
 
     headers = ['nodes', 'EPL', 'max degree']
-    file = 'simple_wheel.csv'
+    file = 'results/' + 'simple_wheel.csv'
     results = []
     for m in range(1, n):
         line = [str(m), str(EPLs[m]), str(maxs[m])]
@@ -121,20 +117,12 @@ elif choice == 2:
 
 ### All tests for several wheels ###
 elif choice == 3:
-    n = 10
+    n = 5
     nodes = np.array([i for i in range(n)])
 
     results = []
-    index = 0 
-    tot = 4**n
-    step = tot / 100.
-    checkpointIndex = 1
-    checkpoint = step
 
-    nbResults = 1000.
-    p = nbResults / tot
-
-    for i in range(2**n):
+    for i in tqdm(range(2**n)):
         aux = ut.intToBinaryArray(i, n)
         res = np.where(aux == 1)
         highOutSubsets = res[0]
@@ -149,28 +137,20 @@ elif choice == 3:
                 highInSubsets = res[0]
                 
                 G = severalWheels(nodes, highOutSubsets, highInSubsets)
-                M = nx.to_numpy_matrix(G)
-                M /= M.sum()
 
-                res = sp.sparseToBND(M)
+                res = sp.sparseToBND(G)
                 N, layers = res[0], res[1]
-                G = nx.from_numpy_matrix(N)
-                EPL = ev.getEPL(M, G)
-                _max = ev.getMaxDegree(G)
+                EPL = ev.getEPL(G, N)
+                _max = ev.getMaxDegree(N)
                 results.append([i, j, EPL, _max])
                 # print("highOutIndex = " + str(i) + " highInIndex = " + str(j) + " EPL = " + str(EPL) + ", max degree = " + str(_max))
-                if index > checkpoint:
-                    print(str(checkpointIndex) + '%')
-                    checkpointIndex += 1
-                    checkpoint += step
-
-                index+=1
 
     headers = ['highOutIndex', 'highInIndex', 'EPL', 'max degree']
-    file = 'composed_wheels_n10.csv'
+    file = 'results/' + 'composed_wheels_n10.csv'
     ex.exportToCSV(file, headers, results)
 
 ### All permutations of n nodes and k high degree nodes
+#### Malfunctionning method ####
 elif choice == 4:
     k = 2
     n = 48
@@ -185,14 +165,11 @@ elif choice == 4:
 
     def launch(nodes, highOutSubsets, highInSubsets, i, j):
         G = severalWheels(nodes, highOutSubsets, highInSubsets)
-        M = nx.to_numpy_matrix(G)
-        M /= M.sum()
 
-        res = sp.sparseToBND(M)
-        N, layers = res[0], res[1]
-        G = nx.from_numpy_matrix(N)
-        EPL = ev.getEPL(M, G)
-        _max = ev.getMaxDegree(G)
+        res = sp.sparseToBND(G)
+        N, _ = res[0], res[1]
+        EPL = ev.getEPL(G, N)
+        _max = ev.getMaxDegree(N)
         results.append([i, j, EPL, _max])
 
         if index[0] > checkpoint[0]:
@@ -228,11 +205,7 @@ elif choice == 4:
 
     aux(np.zeros(n), np.zeros(n), 0, k)
     headers = ['highOutIndex', 'highInIndex', 'EPL', 'max degree']
-    file = 'composed_wheels_n48_k2.csv'
+    file = 'results/' + 'composed_wheels_n48_k2.csv'
     ex.exportToCSV(file, headers, results)
 
     print(tot, index)
-
-elif choice == 5:
-    res = ut.permutations(5, 3)
-    print(res)

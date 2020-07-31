@@ -2,11 +2,10 @@ import networkx as nx
 import numpy as np
 from ast import literal_eval
 
-def getAverageDegree(M):
-    n, _ = M.shape
-    auxM = np.ceil(M)
-    m = auxM.sum()
-    return 2.0*m/n
+def getAverageDegree(G):
+    degrees = dict(G.degree())
+    n = len(G)
+    return sum(degrees.values())/n
 
 def getMaxDegree(G):
     degrees = sorted([d for n, d in G.degree()], reverse=True)
@@ -16,11 +15,12 @@ def getDegrees(G):
     degrees = sorted(G.degree(), key=lambda x:x[1], reverse=True)
     return degrees
 
-def getEPL(M, G):
+def getEPL(G, N):
     """ Calculation of the expected path length """
-    n, _ = M.shape
+    n = len(G)
+    M = nx.to_numpy_matrix(G)
     res = 0
-    D = dict(nx.all_pairs_shortest_path_length(G))
+    D = dict(nx.all_pairs_shortest_path_length(N))
     for i in range(n):
         for j in range(n):
             res += M[i, j] * D[i][j]
@@ -31,16 +31,10 @@ def getDistances(G):
     res = dict(nx.all_pairs_shortest_path_length(G))
     return np.array([[res[i][j] for i in range(n)] for j in range(n)])
 
-def getOutgoingDistribution(M):
-    n, _ = M.shape
-    D = np.zeros(n)
-    for i in range(n):
-        D[i] = np.sum(M[i,:])
-    return D
+def getOutgoingDistribution(G):
+    outDegrees = list(dict(G.out_degree()).values())
+    return np.array(outDegrees)
 
-def getIncomingDistribution(M):
-    n, _ = M.shape
-    D = np.zeros(n)
-    for i in range(n):
-        D[i] = np.sum(M[:,i])
-    return D
+def getIncomingDistribution(G):
+    inDegrees = list(dict(G.in_degree()).values())
+    return np.array(inDegrees)

@@ -63,4 +63,6 @@ def treeToBND(M):
     root = 0
     buildTrees(M, reverseM, root, -1, visited, N, ut.Direction.INCOMING)
 
-    return N
+    resG = nx.from_numpy_matrix(N)
+
+    return resG

@@ -14,6 +14,8 @@ from src import evaluate as ev
 
 def randomGraph(n, m):
   G = nx.gnm_random_graph(n, m, directed=True)
+  print(G)
+  ut.normalizeGraph(G)
   return G
 
 n = 10
@@ -21,17 +23,15 @@ m = 15
 
 # Initialization of the graph
 
-input = randomGraph(n, m)
-M = nx.to_numpy_matrix(input)
-M /= M.sum()
-avgDegree = ev.getAverageDegree(M)
+_input = randomGraph(n, m)
+avgDegree = ev.getAverageDegree(_input)
 
-res = sp.sparseToBND2(input)
+res = sp.sparseToBND2(_input)
 result, edges, rerouters, finalSubGraphs = res[0], res[1], res[2], res[3]
 
 # Initialization of the plot
 
-DrawInput = input.copy()
+DrawInput = _input.copy()
 subGraphs = [nx.empty_graph(n, create_using=nx.DiGraph) for i in range(n)]
 
 fig = plt.figure()
@@ -117,7 +117,7 @@ def update(num):
     nx.draw_circular(finalSubGraphs[index], ax=middle, edge_color=colors[index], with_labels=True, node_color=colors)
 
   if num == 3*m + n:
-    EPL = ev.getEPL(M, result)
+    EPL = ev.getEPL(_input, result)
     maxDegree = ev.getMaxDegree(result)
     left.clear()
     left.set_title(f"III - Combination of all the MTs (EPL: {EPL}, max degree: {maxDegree}), avg degree: {avgDegree}")

@@ -73,6 +73,25 @@ Remarks.
 When a node is assigned to help one of its incident edges, it is the most efficient.
 However, the analysis holds for arbitrary assignments.
 
+Now we claim that EPL are within the constant in comparison to optimum.
+This is a consequence of near-optimality of Mehlhorn trees.
+
+\section{Dealing with congestion}
+
+Above algorithm has asymptotically optimal congestion.
+The lower bound from INFOCOM paper, let's say it's $c$ on the most loaded edge of EgoTree.
+Then, our most congested edge is the one connecting the root to the Mehlhorn tree, and it has congestion $c \cdot \Delta_{avg}$.
+
+Introduce p-EgoTree and the new way of constructing them (instead of solving the scheduling, we simulate solving it, and then pack some trees together).
+Show its properties: it approximates congestion.
+
+Now we show how to trade the congestion to the increased $\Delta_{max}$.
+Using $p$-EgoTrees gives us the $\Delta_{max} = 3\cdot \Delta_{avg} + 6 ) 2 \cdot p \cdot \Delta_{avg}$.
+The congestion is then $4/3$ of LPTF, multiplied by $\Delta_{max} / (p \cdot \Delta_{avg})$.
+The final congestion bound is due to the number of times the node can help, $\beta_i$.
+
+\newpage
+
 \subsection{Example}
 
 \begin{figure}[!htb]\centering
@@ -147,25 +166,27 @@ The built Mehlhorn trees are simple edges.
 Finally, $2$ is connected to an outgoing and an ingoing edge, thus two
 Mehlhorn trees including the nodes $1$ and $3$, will be built from $2$.
 
+\newpage
 
-Now we claim that EPL are within the constant in comparison to optimum.
-This is a consequence of near-optimality of Mehlhorn trees.
+\subsection{Explanatory scheme}
 
-\section{Dealing with congestion}
+\begin{figure}[!htb]\centering
+  \begin{minipage}[b]{.45\linewidth}
+    \begin{adjustbox}{width=\linewidth}
+      \begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=3cm,
+        thick,main node/.style={circle,draw,font=\sffamily\Large\bfseries}]
 
-Above algorithm has asymptotically optimal congestion.
-The lower bound from INFOCOM paper, let's say it's $c$ on the most loaded edge of EgoTree.
-Then, our most congested edge is the one connecting the root to the Mehlhorn tree, and it has congestion $c \cdot \Delta_{avg}$.
+      \node[main node] (1) {k};
+      \node[main node] (2) [above left of=1] {i};
+      \node[main node] (3) [above right of=1] {j};
 
-Introduce p-EgoTree and the new way of constructing them (instead of solving the scheduling, we simulate solving it, and then pack some trees together).
-Show its properties: it approximates congestion.
-
-Now we show how to trade the congestion to the increased $\Delta_{max}$.
-Using $p$-EgoTrees gives us the $\Delta_{max} = 3\cdot \Delta_{avg} + 6 ) 2 \cdot p \cdot \Delta_{avg}$.
-The congestion is then $4/3$ of LPTF, multiplied by $\Delta_{max} / (p \cdot \Delta_{avg})$.
-The final congestion bound is due to the number of times the node can help, $\beta_i$.
-
-
-
+      \path[every node/.style={font=\sffamily\small}]
+      (2) edge node {} (1)
+      (2) edge[dashed] node {} (3)
+      (1) edge node {} (3);
+      \end{tikzpicture}
+    \end{adjustbox}
+  \end{minipage}
+\end{figure}
 
 \end{document}
